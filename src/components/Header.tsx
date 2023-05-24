@@ -3,7 +3,6 @@ import { MainNav } from './MainNav';
 import { Input } from '~/components/ui/input';
 import { User, UserNav } from './UserNav';
 import { signIn, useSession } from 'next-auth/react';
-import Link from 'next/link';
 import { Button } from './ui/button';
 
 export const Header = () => {
@@ -12,7 +11,7 @@ export const Header = () => {
     console.log(session);
 
     return (
-        <div className="flex h-16 items-center px-4 border-b border-b-orange-950">
+        <header className="sticky top-0 bg-white flex h-16 items-center px-4 border-b">
             <Image 
                 src={'/logo.png'}
                 alt='logo'
@@ -25,7 +24,7 @@ export const Header = () => {
                 <Input
                     type="search"
                     placeholder="Search..."
-                    className="h-9 md:w-[100px] lg:w-[300px] focus:outline-none"
+                    className="h-9 md:w-40 lg:w-80 focus:outline-none"
                 />
             </div>
             { session.status === 'authenticated' && 
@@ -36,14 +35,13 @@ export const Header = () => {
                     <span className='w-3'></span>
                     <Button
                         onClick={() => signIn()}
-                        className="text-sm font-medium transition-colors text-slate-500 hover:text-slate-900"
                         >
                         Entrar
                     </Button>
                 </>
             }
             </div>
-          </div>
+          </header>
     );
 
 }

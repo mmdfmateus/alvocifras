@@ -1,4 +1,4 @@
-import { UserPlus, LogOut, Music, Settings, User } from "lucide-react"
+import { UserPlus, LogOut, Music, User } from 'lucide-react'
 import { signOut } from 'next-auth/react'
 
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
@@ -10,7 +10,6 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu"
 
@@ -29,9 +28,9 @@ export function UserNav({ user }: UserNavProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+        <Button variant={'ghost'} className="relative h-8 w-8 rounded-full">
           <Avatar className="h-8 w-8">
-            <AvatarImage src={`${user.image}.jpg`} alt="profile" />
+            <AvatarImage src={`${user.image}.jpg`} />
             <AvatarFallback>{user.name.charAt(0).toUpperCase()}</AvatarFallback>
           </Avatar>
         </Button>
