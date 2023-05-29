@@ -4,6 +4,7 @@ import Head from 'next/head'
 import Image from 'next/image'
 import { Separator } from '~/components/ui/separator'
 import Link from 'next/link'
+import { Dot } from 'lucide-react'
 
 const songs = [
   {
@@ -40,16 +41,6 @@ const Songs: NextPage = () => {
           <div className="container flex flex-col gap-12 px-8 py-16">
             <h1 className='text-4xl'>Músicas</h1>
             <ul className='flex flex-col'>
-                {/* { songs.map((song, index) => (
-                    <>
-                      <li
-                        className=''
-                        key={song.id}>
-                          {song.song}
-                      </li>
-                      <Separator />
-                    </>
-                ))} */}
                 {
                   songs.map((song, index) => {
                     const showInitialLetter = song.song.charAt(0).toLocaleUpperCase() !== currentLetter
@@ -57,7 +48,7 @@ const Songs: NextPage = () => {
                     return (<>
                         { showInitialLetter &&
                           <div>
-                            <h3 className='text-2xl pb-1'>{currentLetter}</h3>
+                            <h3 className='text-2xl pb-1 pl-2'>{currentLetter}</h3>
                             <Separator className='mb-1' />
                           </div>
                         }
@@ -66,18 +57,22 @@ const Songs: NextPage = () => {
                           key={index}
                           className="mb-2 h-16 flex items-center p-2 rounded-md hover:bg-slate-100 last:mb-3"
                           >
-                          <Image
+                          {/* <Image
                             src={`${song.imageUrl}.jpg`}
                             alt='artista'
                             height={48}
                             width={48}
                             className='h-12 w-12 rounded-full mr-4'
-                            />
-                          <div className="space-y-1 flex items-center">
-                            <p className="text-sm font-semibold leading-none">
-                              {song.song}
-                            </p>
-                          </div>
+                            /> */}
+                            <Dot size={36} />
+                            <div className="space-y-1">
+                              <p className="text-sm font-semibold leading-none">
+                                {song.song}
+                              </p>
+                              <p className="text-sm text-muted-foreground">
+                                {song.artist}
+                              </p>
+                            </div>
                         </Link>
                     </>
                     )
