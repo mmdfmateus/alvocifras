@@ -1,31 +1,28 @@
-import { type NextPage } from "next";
-import Head from "next/head";
+import { type NextPage } from 'next'
+import Head from 'next/head'
 
-import { api } from "~/utils/api";
-import Image from 'next/image';
-import { Header } from '~/components/Header';
-import { HomeCard } from '~/components/HomeCard';
+import Image from 'next/image'
+import { HomeCard } from '~/components/HomeCard'
 
 const songs = [
   {
-    song: "Algo melhor",
-    artist: "Sujeito a Reboque",
-    imageUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQd-msomLi9iPCsy56AD6P6qV52munNoPtoztyiRgsFRoO3E2YTQobSBR9mbo6-YEW4DXw&usqp=CAU"
+    song: 'Algo melhor',
+    artist: 'Sujeito a Reboque',
+    imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQd-msomLi9iPCsy56AD6P6qV52munNoPtoztyiRgsFRoO3E2YTQobSBR9mbo6-YEW4DXw&usqp=CAU'
   },
   {
-    song: "Algo melhor",
-    artist: "Sujeito a Reboque",
-    imageUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQd-msomLi9iPCsy56AD6P6qV52munNoPtoztyiRgsFRoO3E2YTQobSBR9mbo6-YEW4DXw&usqp=CAU"
+    song: 'Algo melhor',
+    artist: 'Sujeito a Reboque',
+    imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQd-msomLi9iPCsy56AD6P6qV52munNoPtoztyiRgsFRoO3E2YTQobSBR9mbo6-YEW4DXw&usqp=CAU'
   },
   {
-    song: "Algo melhor",
-    artist: "Sujeito a Reboque",
-    imageUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQd-msomLi9iPCsy56AD6P6qV52munNoPtoztyiRgsFRoO3E2YTQobSBR9mbo6-YEW4DXw&usqp=CAU"
-  },
+    song: 'Algo melhor',
+    artist: 'Sujeito a Reboque',
+    imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQd-msomLi9iPCsy56AD6P6qV52munNoPtoztyiRgsFRoO3E2YTQobSBR9mbo6-YEW4DXw&usqp=CAU'
+  }
 ]
 
 const Home: NextPage = () => {
-
   return (
     <>
       <Head>
@@ -41,7 +38,7 @@ const Home: NextPage = () => {
                   key={index}
                   className="mb-4 h-16 flex items-center p-2 rounded-md hover:bg-slate-100 last:mb-0"
                 >
-                  <Image 
+                  <Image
                     src={`${song.imageUrl}.jpg`}
                     alt='artista'
                     height={48}
@@ -65,7 +62,7 @@ const Home: NextPage = () => {
                 key={index}
                   className="mb-4 h-16 flex items-center p-2 rounded-md hover:bg-slate-100 last:mb-0"
                 >
-                  <Image 
+                  <Image
                     src={`${song.imageUrl}.jpg`}
                     alt='artista'
                     height={48}
@@ -88,7 +85,7 @@ const Home: NextPage = () => {
                   key={index}
                   className="mb-4 h-16 flex items-center p-2 rounded-md hover:bg-slate-100 last:mb-0"
                 >
-                  <Image 
+                  <Image
                     src={`${song.imageUrl}.jpg`}
                     alt='artista'
                     height={48}
@@ -112,7 +109,7 @@ const Home: NextPage = () => {
                 key={index}
                   className="mb-4 h-16 flex items-center p-2 rounded-md hover:bg-slate-100 last:mb-0"
                 >
-                  <Image 
+                  <Image
                     src={`${song.imageUrl}.jpg`}
                     alt='artista'
                     height={48}
@@ -135,7 +132,7 @@ const Home: NextPage = () => {
                   key={index}
                   className="mb-4 h-16 flex items-center p-2 rounded-md hover:bg-slate-100 last:mb-0"
                 >
-                  <Image 
+                  <Image
                     src={`${song.imageUrl}.jpg`}
                     alt='artista'
                     height={48}
@@ -159,7 +156,7 @@ const Home: NextPage = () => {
                 key={index}
                   className="mb-4 h-16 flex items-center p-2 rounded-md hover:bg-slate-100 last:mb-0"
                 >
-                  <Image 
+                  <Image
                     src={`${song.imageUrl}.jpg`}
                     alt='artista'
                     height={48}
@@ -177,7 +174,7 @@ const Home: NextPage = () => {
           </div>
         </main>
     </>
-  );
-};
+  )
+}
 
-export default Home;
+export default Home

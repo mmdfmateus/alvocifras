@@ -1,18 +1,18 @@
-import Image from 'next/image';
-import { MainNav } from './MainNav';
-import { Input } from '~/components/ui/input';
-import { User, UserNav } from './UserNav';
-import { signIn, useSession } from 'next-auth/react';
-import { Button } from './ui/button';
+import Image from 'next/image'
+import { MainNav } from './MainNav'
+import { Input } from '~/components/ui/input'
+import { type User, UserNav } from './UserNav'
+import { signIn, useSession } from 'next-auth/react'
+import { Button } from './ui/button'
 
 export const Header = () => {
-    const session = useSession();
+  const session = useSession()
 
-    console.log(session);
+  console.log(session)
 
-    return (
+  return (
         <header className="sticky top-0 bg-white flex h-16 items-center px-4 border-b">
-            <Image 
+            <Image
                 src={'/logo.png'}
                 alt='logo'
                 width={40}
@@ -27,10 +27,10 @@ export const Header = () => {
                     className="h-9 md:w-40 lg:w-80 focus:outline-none"
                 />
             </div>
-            { session.status === 'authenticated' && 
+            { session.status === 'authenticated' &&
               <UserNav user={session.data.user as User} />
             }
-            { session.status === 'unauthenticated' && 
+            { session.status === 'unauthenticated' &&
                 <>
                     <span className='w-3'></span>
                     <Button
@@ -42,6 +42,5 @@ export const Header = () => {
             }
             </div>
           </header>
-    );
-
+  )
 }

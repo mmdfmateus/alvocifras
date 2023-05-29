@@ -1,8 +1,8 @@
 import { UserPlus, LogOut, Music, User } from 'lucide-react'
 import { signOut } from 'next-auth/react'
 
-import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
-import { Button } from "~/components/ui/button"
+import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar'
+import { Button } from '~/components/ui/button'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,8 +10,8 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "~/components/ui/dropdown-menu"
+  DropdownMenuTrigger
+} from '~/components/ui/dropdown-menu'
 
 export interface User {
     id: string,
@@ -24,7 +24,7 @@ export interface UserNavProps {
     user: User,
 }
 
-export function UserNav({ user }: UserNavProps) {
+export function UserNav ({ user }: UserNavProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>

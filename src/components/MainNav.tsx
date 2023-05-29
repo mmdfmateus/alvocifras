@@ -1,16 +1,16 @@
-import Link from "next/link"
+import Link from 'next/link'
 
-import { cn } from "~/lib/utils"
+import { cn } from '~/lib/utils'
 
-const linkStyle = "text-sm font-medium transition-colors text-slate-500 hover:text-slate-800"
+const linkStyle = 'text-sm font-medium transition-colors text-slate-500 hover:text-slate-800'
 
-export function MainNav({
+export function MainNav ({
   className,
   ...props
 }: React.HTMLAttributes<HTMLElement>) {
   return (
     <nav
-      className={cn("flex items-center space-x-4 lg:space-x-6", className)}
+      className={cn('flex items-center space-x-4 lg:space-x-6', className)}
       {...props}
     >
       <Link
