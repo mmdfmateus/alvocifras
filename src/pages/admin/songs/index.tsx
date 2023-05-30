@@ -1,7 +1,7 @@
 import { type NextPage } from 'next'
 import Head from 'next/head'
 
-import { DataTable } from '~/components/tables/songs/data-table'
+import { DataTable } from '~/components/tables/data-table'
 import { type Song, columns } from '~/components/tables/songs/columns'
 import { Button } from '~/components/ui/button'
 import { Music } from 'lucide-react'
