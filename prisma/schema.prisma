@@ -1,20 +1,11 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-generator client {
-    provider = "prisma-client-js"
-}
-
 datasource db {
     provider     = "mysql"
     url          = env("DATABASE_URL")
     relationMode = "prisma"
 }
 
-model Example {
-    id        String   @id @default(cuid())
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+generator client {
+    provider = "prisma-client-js"
 }
 
 // Necessary for Next auth
@@ -45,13 +36,14 @@ model Session {
 }
 
 model User {
-    id            String    @id @default(cuid())
+    id            String     @id @default(cuid())
     name          String?
-    email         String?   @unique
+    email         String?    @unique
     emailVerified DateTime?
     image         String?
     accounts      Account[]
     sessions      Session[]
+    playlists     Playlist[]
 }
 
 model VerificationToken {
@@ -60,4 +52,52 @@ model VerificationToken {
     expires    DateTime
 
     @@unique([identifier, token])
+}
+
+model Artist {
+    id        String   @id @default(uuid())
+    imageUrl  String   @db.VarChar(1000)
+    name      String   @db.VarChar(200)
+    songs     Song[]   @relation("ArtistSongs")
+    createdAt DateTime @default(now())
+    updateAt  DateTime @updatedAt
+}
+
+model Song {
+    id        String            @id @default(uuid())
+    name      String            @db.VarChar(200)
+    chords    Json
+    lyrics    Json
+    artist    Artist            @relation(name: "ArtistSongs", fields: [artistId], references: [id])
+    artistId  String
+    playlists SongsOnPlaylist[]
+    createdAt DateTime          @default(now())
+    updateAt  DateTime          @updatedAt
+
+    @@index([artistId])
+}
+
+model Playlist {
+    id        String            @id @default(uuid())
+    name      String            @db.VarChar(200)
+    songs     SongsOnPlaylist[]
+    owner     User              @relation(fields: [ownerId], references: [id])
+    ownerId   String
+    createdAt DateTime          @default(now())
+    updateAt  DateTime          @updatedAt
+
+    @@index([ownerId])
+}
+
+model SongsOnPlaylist {
+    id         String   @id @default(uuid())
+    playlist   Playlist @relation(fields: [playlistId], references: [id])
+    playlistId String
+    song       Song     @relation(fields: [songId], references: [id])
+    songId     String
+    createdAt  DateTime @default(now())
+    updateAt   DateTime @updatedAt
+
+    @@index([playlistId])
+    @@index([songId])
 }
