@@ -21,7 +21,6 @@ export const Header = () => {
                     alt='logo'
                     width={40}
                     height={40}
-                    placeholder='blur'
                     />
             </Link>
             <MainNav className="mx-6" />
