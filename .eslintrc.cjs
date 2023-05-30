@@ -9,9 +9,12 @@ const config = {
         "standard",
         "plugin:@typescript-eslint/recommended-requiring-type-checking",
       ],
-      files: ["*.ts", "*.tsx"],
+      files: ["*.ts", "*.tsx",],
       parserOptions: {
         project: path.join(__dirname, "tsconfig.json"),
+      },
+      rules: {
+        "comma-dangle": ["error", "only-multiline",],
       },
     },
   ],
@@ -19,10 +22,11 @@ const config = {
   parserOptions: {
     project: path.join(__dirname, "tsconfig.json"),
   },
-  plugins: ["@typescript-eslint"],
-  extends: ["next/core-web-vitals", "plugin:@typescript-eslint/recommended"],
+  plugins: ["@typescript-eslint",],
+  extends: ["next/core-web-vitals", "plugin:@typescript-eslint/recommended",],
   rules: {
-    "semi": ["error", "always"],
+    "semi": ["error", "always",],
+    "comma-dangle": ["error", "always",],
     "@typescript-eslint/consistent-type-imports": [
       "warn",
       {
@@ -30,8 +34,8 @@ const config = {
         fixStyle: "inline-type-imports",
       },
     ],
-    "@typescript-eslint/no-unused-vars": ["warn", { argsIgnorePattern: "^_" }],
-    "@typescript-eslint/no-misused-promises": ["warn", {"checksVoidReturn": {"attributes": false}}],
+    "@typescript-eslint/no-unused-vars": ["warn", { argsIgnorePattern: "^_", },],
+    "@typescript-eslint/no-misused-promises": ["warn", {"checksVoidReturn": {"attributes": false,},},],
   },
 };
 

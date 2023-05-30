@@ -1,5 +1,6 @@
 import { UserPlus, LogOut, Music, User } from 'lucide-react'
 import { signOut } from 'next-auth/react'
+import Link from 'next/link'
 
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar'
 import { Button } from '~/components/ui/button'
@@ -51,12 +52,22 @@ export function UserNav ({ user }: UserNavProps) {
             <span>Profile</span>
           </DropdownMenuItem>
           <DropdownMenuItem className='hover:bg-slate-200'>
-            <Music className="mr-2 h-4 w-4" />
-            <span>Cadastrar música</span>
+            <Link
+              href={'/admin/songs'}
+              className='flex items-center'
+            >
+              <Music className="mr-2 h-4 w-4" />
+              <span>Cadastrar música</span>
+            </Link>
           </DropdownMenuItem>
           <DropdownMenuItem className='hover:bg-slate-200'>
-            <UserPlus className="mr-2 h-4 w-4" />
-            <span>Cadastrar artista</span>
+            <Link
+              href={'/admin/artists'}
+              className='flex items-center'
+            >
+              <UserPlus className="mr-2 h-4 w-4" />
+              <span>Cadastrar artista</span>
+            </Link>
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
