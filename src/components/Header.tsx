@@ -4,6 +4,7 @@ import { Input } from '~/components/ui/input'
 import { type User, UserNav } from './UserNav'
 import { signIn, useSession } from 'next-auth/react'
 import { Button } from './ui/button'
+import Link from 'next/link'
 
 export const Header = () => {
   const session = useSession()
@@ -12,12 +13,17 @@ export const Header = () => {
 
   return (
         <header className="sticky top-0 bg-white flex h-16 items-center px-4 border-b">
-            <Image
-                src={'/logo.png'}
-                alt='logo'
-                width={40}
-                height={40}
-            />
+            <Link
+                href={'/'}
+                >
+                <Image
+                    src={'/logo.png'}
+                    alt='logo'
+                    width={40}
+                    height={40}
+                    placeholder='blur'
+                    />
+            </Link>
             <MainNav className="mx-6" />
             <div className="ml-auto flex items-center space-x-4">
             <div>
