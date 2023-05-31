@@ -2,7 +2,7 @@ import { type NextPage } from 'next'
 import Head from 'next/head'
 
 import { DataTable } from '~/components/tables/data-table'
-import { columns, type Artist } from '~/components/tables/artists/columns'
+import { columns } from '~/components/tables/artists/columns'
 import { Button } from '~/components/ui/button'
 import { UserPlus } from 'lucide-react'
 
@@ -27,20 +27,21 @@ import {
 } from '@/components/ui/form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useState } from 'react'
+import { api } from '~/utils/api'
 
-function getData (): Artist[] {
-  // Fetch data from your API here.
-  return [
-    {
-      id: '1',
-      name: 'Sujeito a Reboque',
-      imageUrl: 'Sujeito a Reboque',
-      createdAt: '01/04/2023',
-      updatedAt: '01/04/2023'
-    }
-    // ...
-  ]
-}
+// function getData (): Artist[] {
+//   // Fetch data from your API here.
+//   return [
+//     {
+//       id: '1',
+//       name: 'Sujeito a Reboque',
+//       imageUrl: 'Sujeito a Reboque',
+//       createdAt: new Date('01/04/2023'),
+//       updateAt: new Date('01/04/2023')
+//     }
+//     // ...
+//   ]
+// }
 
 const formSchema = z.object({
   name: z.string().min(4).max(50),
@@ -48,7 +49,6 @@ const formSchema = z.object({
 })
 
 const Artists: NextPage = () => {
-  const data = getData()
   const [open, setOpen] = useState(false)
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -58,10 +58,17 @@ const Artists: NextPage = () => {
     }
   })
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
+  const { data: artists, isLoading } = api.artists.getAll.useQuery()
+  const { artists: artistsContext } = api.useContext()
+  const { mutateAsync } = api.artists.create.useMutation()
+
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
-    console.log(values)
+
+    await mutateAsync(values)
+    await artistsContext.invalidate()
+
     setOpen(false)
   }
 
@@ -122,7 +129,7 @@ const Artists: NextPage = () => {
                     </DialogContent>
                 </Dialog>
             </div>
-            <DataTable columns={columns} data={data} />
+            {!isLoading && artists && <DataTable columns={columns} data={artists} />}
           </div>
         </main>
     </>

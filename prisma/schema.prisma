@@ -60,7 +60,7 @@ model Artist {
     name      String   @db.VarChar(200)
     songs     Song[]   @relation("ArtistSongs")
     createdAt DateTime @default(now())
-    updateAt  DateTime @updatedAt
+    updatedAt DateTime @updatedAt
 }
 
 model Song {
@@ -72,7 +72,7 @@ model Song {
     artistId  String
     playlists SongsOnPlaylist[]
     createdAt DateTime          @default(now())
-    updateAt  DateTime          @updatedAt
+    updatedAt DateTime          @updatedAt
 
     @@index([artistId])
 }
@@ -84,7 +84,7 @@ model Playlist {
     owner     User              @relation(fields: [ownerId], references: [id])
     ownerId   String
     createdAt DateTime          @default(now())
-    updateAt  DateTime          @updatedAt
+    updatedAt DateTime          @updatedAt
 
     @@index([ownerId])
 }
@@ -96,7 +96,7 @@ model SongsOnPlaylist {
     song       Song     @relation(fields: [songId], references: [id])
     songId     String
     createdAt  DateTime @default(now())
-    updateAt   DateTime @updatedAt
+    updatedAt  DateTime @updatedAt
 
     @@index([playlistId])
     @@index([songId])

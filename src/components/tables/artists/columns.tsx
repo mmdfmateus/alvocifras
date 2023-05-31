@@ -7,8 +7,8 @@ export type Artist = {
   id: string
   name: string
   imageUrl: string
-  createdAt: string
-  updatedAt: string
+  createdAt: Date
+  updatedAt: Date
 }
 
 export const columns: ColumnDef<Artist>[] = [
