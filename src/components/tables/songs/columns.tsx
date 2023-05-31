@@ -16,8 +16,8 @@ export type Song = {
   id: string
   name: string
   artist: string
-  createdAt: string
-  updatedAt: string
+  createdAt: Date
+  updatedAt: Date
 }
 
 export const columns: ColumnDef<Song>[] = [

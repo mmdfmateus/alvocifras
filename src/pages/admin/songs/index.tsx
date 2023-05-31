@@ -2,7 +2,7 @@ import { type NextPage } from 'next'
 import Head from 'next/head'
 
 import { DataTable } from '~/components/tables/data-table'
-import { type Song, columns } from '~/components/tables/songs/columns'
+import { columns } from '~/components/tables/songs/columns'
 import { Button } from '~/components/ui/button'
 import { Music } from 'lucide-react'
 
@@ -37,31 +37,7 @@ import Link from 'next/link'
 import { Textarea } from '~/components/ui/textarea'
 import { TextareaWithDescription } from '~/components/TextAreaWithDescription'
 import { useState } from 'react'
-
-function getData (): Song[] {
-  // Fetch data from your API here.
-  return [
-    {
-      id: '1',
-      name: 'Algo Melhor',
-      artist: 'Sujeito a Reboque',
-      createdAt: '01/04/2023',
-      updatedAt: '01/04/2023'
-    }
-    // ...
-  ]
-}
-
-const artistIds = [
-  {
-    id: '1',
-    name: 'Sujeito a Reboque'
-  },
-  {
-    id: '2',
-    name: 'Flávio Barboni'
-  }
-]
+import { api } from '~/utils/api'
 
 const formSchema = z.object({
   name: z.string().min(4).max(50),
@@ -70,22 +46,29 @@ const formSchema = z.object({
 })
 
 const Songs: NextPage = () => {
-  const data = getData()
   const [open, setOpen] = useState(false)
+
+  const { data: songs, isLoading: isLoadingSongs } = api.songs.getAll.useQuery()
+  const { data: artists, isLoading: isLoadingArtists } = api.artists.getAll.useQuery()
+  const { songs: songsContext } = api.useContext()
+  const { mutateAsync } = api.songs.create.useMutation({
+    onSuccess (data, variables, context) {
+      void songsContext.invalidate()
+      setOpen(false)
+      form.reset()
+    }
+  })
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      artistId: '1',
       name: '',
       chords: '',
     }
   })
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    console.log(values)
-    setOpen(false)
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    await mutateAsync(values)
   }
 
   return (
@@ -131,18 +114,18 @@ const Songs: NextPage = () => {
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel>Artista</FormLabel>
-                                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                            { !isLoadingArtists && artists && <Select onValueChange={field.onChange} defaultValue={field.value}>
                                                 <FormControl>
                                                     <SelectTrigger>
-                                                        <SelectValue placeholder="Select a verified email to display" />
+                                                        <SelectValue placeholder="Escolha o artista" />
                                                     </SelectTrigger>
                                                 </FormControl>
                                                 <SelectContent>
-                                                    {artistIds.map((artist) => (
+                                                    {artists.map((artist) => (
                                                         <SelectItem key={artist.id} value={artist.id}>{artist.name}</SelectItem>
                                                     ))}
                                                 </SelectContent>
-                                            </Select>
+                                            </Select>}
                                             <FormDescription>
                                                 Caso não exista o artista desejado, você precisa adiciona-lo primeiro{' '}
                                                 <Link href="/admin/artists" className='underline hover:text-primary'>aqui</Link>.
@@ -181,7 +164,7 @@ const Songs: NextPage = () => {
                     </DialogContent>
                 </Dialog>
             </div>
-            <DataTable columns={columns} data={data} />
+            {!isLoadingSongs && songs && <DataTable columns={columns} data={songs} />}
           </div>
         </main>
     </>
