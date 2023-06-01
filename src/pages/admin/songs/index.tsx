@@ -164,6 +164,7 @@ const Songs: NextPage = () => {
                     </DialogContent>
                 </Dialog>
             </div>
+            { isLoadingSongs && <h2>Carregando...</h2> }
             {!isLoadingSongs && songs && <DataTable columns={columns} data={songs} />}
           </div>
         </main>

@@ -29,6 +29,11 @@ export const songsRouter = createTRPCRouter({
           createdAt: true,
           updatedAt: true,
         },
+        orderBy: [
+          {
+            name: 'asc',
+          },
+        ],
       })
 
       return response.map(

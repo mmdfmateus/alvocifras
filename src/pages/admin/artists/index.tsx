@@ -129,6 +129,7 @@ const Artists: NextPage = () => {
                     </DialogContent>
                 </Dialog>
             </div>
+            { isLoading && <h2>Carregando...</h2> }
             {!isLoading && artists && <DataTable columns={columns} data={artists} />}
           </div>
         </main>
