@@ -8,7 +8,7 @@ await import("./src/env.mjs");
 const config = {
   reactStrictMode: true,
   images: {
-    domains: ['encrypted-tbn0.gstatic.com']
+    domains: ['encrypted-tbn0.gstatic.com', 'p16.resso.me', 'jornalibia.com.br',],
   },
 
   /**
@@ -18,7 +18,7 @@ const config = {
    * @see https://github.com/vercel/next.js/issues/41980
    */
   i18n: {
-    locales: ["en"],
+    locales: ["en",],
     defaultLocale: "en",
   },
 };

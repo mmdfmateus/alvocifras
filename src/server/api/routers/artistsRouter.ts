@@ -28,6 +28,11 @@ export const artistsRouter = createTRPCRouter({
           createdAt: true,
           updatedAt: true,
         },
+        orderBy: [
+          {
+            name: 'asc',
+          },
+        ],
       })
 
       return response
