@@ -35,15 +35,11 @@ import {
 import { zodResolver } from '@hookform/resolvers/zod'
 import Link from 'next/link'
 import { Textarea } from '~/components/ui/textarea'
-import { TextareaWithDescription } from '~/components/TextAreaWithDescription'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { api } from '~/utils/api'
-
-const formSchema = z.object({
-  name: z.string().min(4).max(50),
-  artistId: z.string().nonempty(),
-  chords: z.string().nonempty(),
-})
+import { ChordsOverWordsParser, HtmlTableFormatter } from 'chordsheetjs'
+import { ChordsPreview } from '~/components/chordsViewer/ChordsPreview'
+import { Label } from '@radix-ui/react-label'
 
 const Songs: NextPage = () => {
   const [open, setOpen] = useState(false)
@@ -59,17 +55,50 @@ const Songs: NextPage = () => {
     }
   })
 
+  const formSchema = z.object({
+    name: z.string().min(4, 'Nome precisa ter mais de 4 caracteres').max(50, 'Nome não pode ter mais de 50 caracteres'),
+    artistId: z.string({ required_error: 'Escolha um artista' }).nonempty('Escolha um artista'),
+    chords: z.string().refine((data) => !isError, { message: 'Cifra inválida' }),
+  })
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: '',
-      chords: '',
+      artistId: 'Selecione o artista',
+      chords: ' ',
     }
   })
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     await mutateAsync(values)
   }
+
+  const [song, setSong] = useState<string>('<div></div>')
+  const [content, setContent] = useState<string>('')
+  const [isError, setIsError] = useState<boolean>(false)
+
+  const validateChords = (content: string) => {
+    try {
+      setIsError(false)
+      const parser = new ChordsOverWordsParser()
+      const formatter = new HtmlTableFormatter()
+      const song = parser.parse(content)
+
+      setSong(formatter.format(song))
+      setIsError(false)
+      return true
+    } catch (err) {
+      console.log(err)
+      setIsError(true)
+      // setError && setError(true)
+      return false
+    }
+  }
+
+  useEffect(() => {
+    validateChords(content)
+  }, [content, isError])
 
   return (
     <>
@@ -139,25 +168,31 @@ const Songs: NextPage = () => {
                                     name="chords"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>Cifra</FormLabel>
+                                            <FormLabel >Cifra</FormLabel>
                                             <FormControl>
                                                 <Textarea
                                                   placeholder='Cole aqui a cifra da música'
                                                   {...field}
                                                   rows={15}
-                                                   />
+                                                  className='max-h-80'
+                                                  onChange={(data) => setContent(data.target.value)}
+                                                  value={content}
+                                                />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
                                     )}
                                 />
-                                <TextareaWithDescription
-                                  placeholder='Veja aqui como ficará a cifra e faça os ajustes que desejar'
-                                  rows={15}
-                                  disabled
-                                  label='Preview'
-                                  description='A cifra será salva da maneira que está sendo exibida acima, faça os ajustes necessários'
-                                  />
+                                <div className='h-full'>
+                                  <Label className='text-muted-foreground'>Preview</Label>
+                                  <ChordsPreview
+                                    placeholder='Veja aqui como ficará a cifra e faça os ajustes que desejar'
+                                    label='Preview'
+                                    description='A cifra será salva da maneira que está sendo exibida acima, faça os ajustes necessários'
+                                    songAsHtml={song}
+                                    isError={isError}
+                                    />
+                                </div>
                                 <Button className='col-span-2' type='submit' size={'lg'}>Submit</Button>
                             </form>
                         </Form>

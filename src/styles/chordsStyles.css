@@ -1,0 +1,26 @@
+.chord-sheet .chord {
+  color: coral;
+  cursor: default;
+  font-weight: 700;
+  padding-top: 0.75rem;
+}
+
+.chord-sheet .chord:not(:last-child) {
+  padding-right: 10px;
+}
+
+.chord-sheet .paragraph {
+  margin-bottom: 1em;
+}
+
+.chord-sheet .row {
+  display: flex;
+}
+
+.chord-sheet .chord:after {
+  content: '\200b';
+}
+
+.chord-sheet .lyrics:after {
+  content: '\200b';
+}
