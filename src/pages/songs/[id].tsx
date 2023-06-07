@@ -2,14 +2,7 @@ import { type NextPage } from 'next'
 import Head from 'next/head'
 import Image from 'next/image'
 
-import { DataTable } from '~/components/tables/data-table'
-import { columns } from '~/components/tables/songs/columns'
-
-import { useEffect, useState } from 'react'
 import { api } from '~/utils/api'
-import { ChordsOverWordsParser, HtmlTableFormatter } from 'chordsheetjs'
-import { ChordsPreview } from '~/components/chordsViewer/ChordsPreview'
-import { Label } from '@radix-ui/react-label'
 import { useRouter } from 'next/router'
 
 const Songs: NextPage = () => {
