@@ -28,20 +28,10 @@ import {
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useState } from 'react'
 import { api } from '~/utils/api'
+import { UploadButton } from '@uploadthing/react'
 
-// function getData (): Artist[] {
-//   // Fetch data from your API here.
-//   return [
-//     {
-//       id: '1',
-//       name: 'Sujeito a Reboque',
-//       imageUrl: 'Sujeito a Reboque',
-//       createdAt: new Date('01/04/2023'),
-//       updateAt: new Date('01/04/2023')
-//     }
-//     // ...
-//   ]
-// }
+import type { CustomFileRouter } from '~/server/uploadthing'
+import Image from 'next/image'
 
 const formSchema = z.object({
   name: z.string().min(4).max(50),
@@ -50,6 +40,8 @@ const formSchema = z.object({
 
 const Artists: NextPage = () => {
   const [open, setOpen] = useState(false)
+  const [imageUploaded, setImageUploaded] = useState(false)
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -60,7 +52,12 @@ const Artists: NextPage = () => {
 
   const { data: artists, isLoading } = api.artists.getAll.useQuery()
   const { artists: artistsContext } = api.useContext()
-  const { mutateAsync } = api.artists.create.useMutation()
+  const { mutateAsync } = api.artists.create.useMutation({
+    onSuccess (data, variables, context) {
+      form.reset()
+      setImageUploaded(false)
+    }
+  })
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     // Do something with the form values.
@@ -70,6 +67,7 @@ const Artists: NextPage = () => {
     await artistsContext.invalidate()
 
     setOpen(false)
+    setImageUploaded(false)
   }
 
   return (
@@ -95,7 +93,7 @@ const Artists: NextPage = () => {
                             <DialogTitle>Cadastrar artista</DialogTitle>
                         </DialogHeader>
                         <Form {...form}>
-                            <form onSubmit={form.handleSubmit(onSubmit)} className='grid grid-cols-2 gap-6'>
+                            <form onSubmit={form.handleSubmit(onSubmit)} className='grid grid-cols-2 gap-6 items-center'>
                                 <FormField
                                     control={form.control}
                                     name="name"
@@ -103,7 +101,7 @@ const Artists: NextPage = () => {
                                         <FormItem>
                                             <FormLabel>Nome</FormLabel>
                                             <FormControl>
-                                                <Input placeholder="Algo melhor" {...field} />
+                                                <Input placeholder="Sujeito a Reboque" {...field} />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -116,7 +114,36 @@ const Artists: NextPage = () => {
                                         <FormItem>
                                             <FormLabel>Link da imagem</FormLabel>
                                             <FormControl>
-                                                <Input placeholder="https://site.com/image.jpeg" {...field} />
+                                              <div className='flex items-center justify-center'>
+                                                {/* <Input placeholder="https://site.com/image.jpeg" {...field} /> */}
+                                                { imageUploaded &&
+                                                  <Image
+                                                    src={form.getValues('imageUrl')}
+                                                    alt='Artista'
+                                                    width={144}
+                                                    height={144}
+                                                    className='h-36 w-36 rounded-md'/>
+                                                  }
+                                                { !imageUploaded &&
+                                                  <UploadButton<CustomFileRouter>
+                                                    endpoint="imageUploader"
+                                                    onClientUploadComplete={(res) => {
+                                                      // Do something with the response
+                                                      console.log('Files: ', res)
+                                                      if (res && res?.length > 0) {
+                                                        form.setValue('imageUrl', res[0].fileUrl)
+                                                        setImageUploaded(true)
+                                                      }
+                                                      // alert('Upload Completed')
+                                                    }}
+                                                    onUploadError={(error: Error) => {
+                                                      // Do something with the error.
+                                                      setImageUploaded(false)
+                                                      alert(`ERROR! ${error.message}`)
+                                                    }}
+                                                    />
+                                                  }
+                                              </div>
                                             </FormControl>
                                             <FormDescription>O link precisa terminar com .jpeg ou .jpg</FormDescription>
                                             <FormMessage />

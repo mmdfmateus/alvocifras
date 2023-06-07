@@ -6,6 +6,7 @@ import { api } from '~/utils/api'
 
 import '~/styles/globals.css'
 import '~/styles/chordsStyles.css'
+import '@uploadthing/react/styles.css'
 import { Header } from '~/components/Header'
 
 const MyApp: AppType<{ session: Session | null }> = ({

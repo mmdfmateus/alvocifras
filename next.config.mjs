@@ -8,9 +8,11 @@ await import("./src/env.mjs");
 const config = {
   reactStrictMode: true,
   images: {
-    domains: ['encrypted-tbn0.gstatic.com', 'p16.resso.me', 'jornalibia.com.br', 'akamai.sscdn.co',],
+    domains: ['encrypted-tbn0.gstatic.com', 'p16.resso.me', 'jornalibia.com.br', 'akamai.sscdn.co', 'uploadthing.com',],
   },
-
+  experimental: {
+    esmExternals: false,
+  },
   /**
    * If you have `experimental: { appDir: true }` set, then you must comment the below `i18n` config
    * out.
