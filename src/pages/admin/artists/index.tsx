@@ -130,8 +130,8 @@ const Artists: NextPage = () => {
                                                     onClientUploadComplete={(res) => {
                                                       // Do something with the response
                                                       console.log('Files: ', res)
-                                                      if (res && res?.length > 0) {
-                                                        form.setValue('imageUrl', res[0].fileUrl)
+                                                      if (res && res.length > 0) {
+                                                        form.setValue('imageUrl', res[0]?.fileUrl ?? '')
                                                         setImageUploaded(true)
                                                       }
                                                       // alert('Upload Completed')
