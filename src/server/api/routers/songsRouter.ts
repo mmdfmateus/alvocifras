@@ -1,4 +1,5 @@
 import { type Artist } from '@prisma/client'
+import { TRPCError } from '@trpc/server'
 import { z } from 'zod'
 
 import {
@@ -50,6 +51,28 @@ export const songsRouter = createTRPCRouter({
           ...song,
         })
       )
+    }),
+
+  getById: publicProcedure
+    .input(z.string().uuid())
+    .query(async ({ ctx, input }) => {
+      const response = await ctx.prisma.song.findFirst({
+        where: {
+          id: input,
+        },
+        include: {
+          artist: {},
+        },
+      })
+
+      if (!response) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Música não encontrada',
+        })
+      }
+
+      return response
     }),
 
   create: protectedProcedure

@@ -12,7 +12,8 @@ export const Header = () => {
   console.log(session)
 
   return (
-        <header className="sticky top-0 bg-white flex h-16 items-center px-4 border-b">
+    <header className='sticky'>
+        <section className="sticky container max-w-screen-lg top-0 bg-white flex h-16 items-center px-4">
             <Link
                 href={'/'}
                 >
@@ -30,7 +31,7 @@ export const Header = () => {
                     type="search"
                     placeholder="Search..."
                     className="h-9 md:w-40 lg:w-80 focus:outline-none"
-                />
+                    />
             </div>
             { session.status === 'authenticated' &&
               <UserNav user={session.data.user as User} />
@@ -46,6 +47,8 @@ export const Header = () => {
                 </>
             }
             </div>
-          </header>
+        </section>
+        <div className='sticky h-[1px] w-full border-b z-40 bg-red-500'></div>
+    </header>
   )
 }

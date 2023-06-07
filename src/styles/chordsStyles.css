@@ -1,5 +1,5 @@
 .chord-sheet .chord {
-  color: coral;
+  color: var(--primary);
   cursor: default;
   font-weight: 700;
   padding-top: 0.75rem;

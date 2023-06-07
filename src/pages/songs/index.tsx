@@ -36,7 +36,7 @@ const Songs: NextPage = () => {
                             </div>
                           }
                           <Link
-                            href={`/song/${song.id}`}
+                            href={`/songs/${song.id}`}
                             key={index}
                             className="mb-2 h-16 flex items-center p-2 rounded-md hover:bg-slate-100 last:mb-3"
                             >

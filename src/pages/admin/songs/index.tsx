@@ -66,12 +66,13 @@ const Songs: NextPage = () => {
     defaultValues: {
       name: '',
       artistId: 'Selecione o artista',
-      chords: ' ',
+      chords: '',
     }
   })
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    await mutateAsync(values)
+    console.log(values)
+    await mutateAsync({ ...values, chords: song })
   }
 
   const [song, setSong] = useState<string>('<div></div>')
