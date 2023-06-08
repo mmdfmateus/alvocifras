@@ -1,3 +1,4 @@
+import { TRPCError } from '@trpc/server'
 import { z } from 'zod'
 
 import {
@@ -38,6 +39,27 @@ export const artistsRouter = createTRPCRouter({
       return response
     }),
 
+  getById: publicProcedure
+    .input(z.string().uuid())
+    .query(async ({ ctx, input }) => {
+      const response = await ctx.prisma.artist.findFirst({
+        where: {
+          id: input,
+        },
+        include: {
+          songs: {},
+        },
+      })
+
+      if (!response) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Artista não encontrada',
+        })
+      }
+
+      return response
+    }),
   create: protectedProcedure
     .input(
       z.object({

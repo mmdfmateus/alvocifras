@@ -36,7 +36,7 @@ const Artists: NextPage = () => {
                             </div>
                           }
                           <Link
-                            href={`/artist/${artist.id}`}
+                            href={`/artists/${artist.id}`}
                             key={index}
                             className="mb-2 h-16 flex items-center p-2 rounded-md hover:bg-slate-100 last:mb-3"
                             >
@@ -45,7 +45,7 @@ const Artists: NextPage = () => {
                               alt='artista'
                               height={48}
                               width={48}
-                              className='h-12 w-12 rounded-full mr-4'
+                              className='h-12 w-12 rounded-full mr-4 shadow-xl'
                               />
                               <div className="space-y-1 flex items-center">
                                 <p className="text-sm font-semibold leading-none">

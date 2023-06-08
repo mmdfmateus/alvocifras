@@ -29,7 +29,7 @@ const Songs: NextPage = () => {
                     alt='artista'
                     height={96}
                     width={96}
-                    className='h-24 w-24 rounded-full mr-4'
+                    className='h-24 w-24 rounded-full mr-4 shadow-2xl'
                   />
                   <div className='flex flex-col'>
                     <h1 className='text-4xl'>{song.name}</h1>
