@@ -24,7 +24,7 @@ const ArtistPage: NextPage = () => {
         <main className="flex w-screen flex-col items-center">
           { isLoadingArtist && <h2>Carregando...</h2> }
           {!isLoadingArtist && artist &&
-            <div className="container max-w-screen-lg flex flex-col items-center gap-12 px-8 py-16">
+            <div className="container max-w-screen-lg flex flex-col items-center gap-16 px-8 py-16">
                 <div className='flex gap-4 items-center'>
                   <Image
                     src={artist.imageUrl}
@@ -35,7 +35,6 @@ const ArtistPage: NextPage = () => {
                   />
                   <div className='flex flex-col'>
                     <h1 className='text-4xl'>{artist.name}</h1>
-                    <h3 className='text-xl text-muted-foreground'>{artist.name}</h3>
                   </div>
                 </div>
                 <ul className='flex flex-col min-w-full'>
