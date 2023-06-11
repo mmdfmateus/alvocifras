@@ -52,7 +52,7 @@ const Artists: NextPage = () => {
 
   const { data: artists, isLoading } = api.artists.getAll.useQuery()
   const { artists: artistsContext } = api.useContext()
-  const { mutateAsync } = api.artists.create.useMutation({
+  const { mutateAsync, isLoading: isCreating } = api.artists.create.useMutation({
     onSuccess (data, variables, context) {
       form.reset()
       setImageUploaded(false)
@@ -64,9 +64,9 @@ const Artists: NextPage = () => {
     // ✅ This will be type-safe and validated.
 
     await mutateAsync(values)
+    setOpen(false)
     await artistsContext.invalidate()
 
-    setOpen(false)
     setImageUploaded(false)
   }
 
@@ -101,7 +101,7 @@ const Artists: NextPage = () => {
                                         <FormItem>
                                             <FormLabel>Nome</FormLabel>
                                             <FormControl>
-                                                <Input placeholder="Sujeito a Reboque" {...field} />
+                                                <Input disabled={isCreating} placeholder="Sujeito a Reboque" {...field} />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -150,7 +150,7 @@ const Artists: NextPage = () => {
                                         </FormItem>
                                     )}
                                 />
-                                <Button className='col-span-2' size={'lg'}>Submit</Button>
+                                <Button isLoading={isCreating} className='col-span-2' size={'lg'}>Submit</Button>
                             </form>
                         </Form>
                     </DialogContent>

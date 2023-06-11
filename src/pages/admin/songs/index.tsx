@@ -47,11 +47,11 @@ const Songs: NextPage = () => {
   const { data: songs, isLoading: isLoadingSongs } = api.songs.getAll.useQuery()
   const { data: artists, isLoading: isLoadingArtists } = api.artists.getAll.useQuery()
   const { songs: songsContext } = api.useContext()
-  const { mutateAsync } = api.songs.create.useMutation({
+  const { mutateAsync, isLoading: isCreating } = api.songs.create.useMutation({
     onSuccess (data, variables, context) {
+      form.reset()
       void songsContext.invalidate()
       setOpen(false)
-      form.reset()
     }
   })
 
@@ -65,14 +65,19 @@ const Songs: NextPage = () => {
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: '',
-      artistId: 'Selecione o artista',
+      artistId: '',
       chords: '',
     }
   })
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     console.log(values)
+    if (song.length === 0) {
+      form.setError('chords', { message: 'Digite a cifra' })
+      return
+    }
     await mutateAsync({ ...values, chords: song })
+    form.reset()
   }
 
   const [song, setSong] = useState<string>('<div></div>')
@@ -132,7 +137,7 @@ const Songs: NextPage = () => {
                                         <FormItem>
                                             <FormLabel>Nome</FormLabel>
                                             <FormControl>
-                                                <Input placeholder="Algo melhor" {...field} />
+                                                <Input disabled={isCreating} placeholder="Algo melhor" {...field} />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -144,7 +149,7 @@ const Songs: NextPage = () => {
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel>Artista</FormLabel>
-                                            { !isLoadingArtists && artists && <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                            { !isLoadingArtists && artists && <Select disabled={isCreating} onValueChange={field.onChange} defaultValue={field.value}>
                                                 <FormControl>
                                                     <SelectTrigger>
                                                         <SelectValue placeholder="Escolha o artista" />
@@ -178,6 +183,7 @@ const Songs: NextPage = () => {
                                                   className='max-h-80'
                                                   onChange={(data) => setContent(data.target.value)}
                                                   value={content}
+                                                  disabled={isCreating}
                                                 />
                                             </FormControl>
                                             <FormMessage />
@@ -194,7 +200,7 @@ const Songs: NextPage = () => {
                                     isError={isError}
                                     />
                                 </div>
-                                <Button className='col-span-2' size={'lg'}>Submit</Button>
+                                <Button className='col-span-2' isLoading={isCreating} size={'lg'}>Submit</Button>
                             </form>
                         </Form>
                     </DialogContent>
