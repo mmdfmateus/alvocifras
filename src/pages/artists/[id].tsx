@@ -31,7 +31,7 @@ const ArtistPage: NextPage = () => {
                     alt='artista'
                     height={144}
                     width={144}
-                    className='h-36 w-36 rounded-full mr-4 shadow-2xl'
+                    className='h-36 w-36 rounded-full mr-4 shadow-2xl aspect-square' // test aspect ratio
                   />
                   <div className='flex flex-col'>
                     <h1 className='text-4xl'>{artist.name}</h1>

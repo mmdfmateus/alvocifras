@@ -81,8 +81,8 @@ const Artists: NextPage = () => {
           <div className="container flex flex-col gap-12 px-8 py-16">
             <div className='flex flex-col gap-4 sm:flex-row items-center justify-between'>
                 <h1 className='text-4xl'>Artistas</h1>
-                <Dialog modal={false} open={open} onOpenChange={setOpen}>
-                    <DialogTrigger asChild>
+                <Dialog open={open} onOpenChange={setOpen}>
+                    <DialogTrigger>
                         <Button>
                             <UserPlus className="mr-6 h-4 w-4" strokeWidth='2.5' />
                             <span className='text-md font-semibold'>Cadastrar artista</span>
@@ -150,7 +150,7 @@ const Artists: NextPage = () => {
                                         </FormItem>
                                     )}
                                 />
-                                <Button className='col-span-2' type='submit' size={'lg'}>Submit</Button>
+                                <Button className='col-span-2' size={'lg'}>Submit</Button>
                             </form>
                         </Form>
                     </DialogContent>
