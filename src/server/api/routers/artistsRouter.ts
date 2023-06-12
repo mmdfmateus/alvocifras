@@ -60,6 +60,7 @@ export const artistsRouter = createTRPCRouter({
 
       return response
     }),
+
   create: protectedProcedure
     .input(
       z.object({
@@ -76,5 +77,37 @@ export const artistsRouter = createTRPCRouter({
       })
 
       return result.id
+    }),
+
+  edit: protectedProcedure
+    .input(
+      z.object({
+        id: z.string().uuid(),
+        name: z.string().min(4).max(50),
+        imageUrl: z.string().url(),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      const result = await ctx.prisma.artist.update({
+        where: {
+          id: input.id,
+        },
+        data: {
+          name: input.name,
+          imageUrl: input.imageUrl,
+        },
+      })
+
+      return result.id
+    }),
+
+  delete: protectedProcedure
+    .input(z.string().uuid())
+    .mutation(async ({ input, ctx }) => {
+      return await ctx.prisma.artist.delete({
+        where: {
+          id: input,
+        },
+      })
     }),
 })

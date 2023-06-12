@@ -10,6 +10,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
+import { getDateParamFormatted } from '../data-table'
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
 export type Song = {
@@ -35,11 +36,13 @@ export const columns: ColumnDef<Song>[] = [
   },
   {
     accessorKey: 'createdAt',
-    header: 'Criado em'
+    header: 'Criado em',
+    cell: ({ row }) => getDateParamFormatted(row.getValue('createdAt')),
   },
   {
     accessorKey: 'updatedAt',
-    header: 'Atualizado em'
+    header: 'Atualizado em',
+    cell: ({ row }) => getDateParamFormatted(row.getValue('updatedAt')),
   },
   {
     id: 'actions',

@@ -2,7 +2,7 @@ import {
   type ColumnDef,
   flexRender,
   getCoreRowModel,
-  useReactTable
+  useReactTable,
 } from '@tanstack/react-table'
 
 import {
@@ -25,6 +25,23 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
+
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog'
+import { type Artist } from '@prisma/client'
+import { api } from '~/utils/api'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog'
+import AddArtistForm from '../AddArtistForm'
+import { useState } from 'react'
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
@@ -91,7 +108,11 @@ export function DataTable<TData, TValue> ({
   )
 }
 
-export function EditTableRow () {
+export function EditArtistTableRow ({ row }: { row: Artist }) {
+  const { mutateAsync, isLoading } = api.artists.delete.useMutation()
+  const { artists: artistsContext } = api.useContext()
+  const [open, setOpen] = useState(false)
+
   return (
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
@@ -102,10 +123,70 @@ export function EditTableRow () {
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuLabel>Ações</DropdownMenuLabel>
-          <DropdownMenuItem>Editar</DropdownMenuItem>
+          <Dialog open={open} onOpenChange={setOpen}>
+            <DialogTrigger>
+              <DropdownMenuItem
+                onSelect={(event) => {
+                  event.preventDefault()
+                }}
+              >
+                Editar
+              </DropdownMenuItem>
+            </DialogTrigger>
+            <DialogContent className="container md:max-w-screen-lg">
+                <DialogHeader>
+                    <DialogTitle>Cadastrar artista</DialogTitle>
+                </DialogHeader>
+                <AddArtistForm setOpen={setOpen} existingForm={{ id: row.id, name: row.name, imageUrl: row.imageUrl }} />
+            </DialogContent>
+          </Dialog>
+
           <DropdownMenuSeparator />
-          <DropdownMenuItem className='bg-destructive text-destructive-foreground hover:bg-destructive/90'>Excluir</DropdownMenuItem>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <DropdownMenuItem
+                className='w-full bg-destructive text-destructive-foreground hover:bg-red-100'
+                onSelect={(event) => {
+                  event.preventDefault()
+                }}
+                // asChild
+                id='test'
+                >
+                  {/* <Button size='sm'>Excluir</Button> */}
+                  Excluir
+                </DropdownMenuItem>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Deseja realmente excluir esse artista?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Essa ação vai permanentemente remove-lo do banco de dados
+                  e não poderá ser desfeita
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel disabled={isLoading} >Não deletar</AlertDialogCancel>
+                <AlertDialogAction asChild>
+                  <Button
+                    variant='destructive'
+                    onClick={async () => {
+                      await mutateAsync(row.id)
+                      await artistsContext.invalidate()
+                    }}
+                    disabled={isLoading}
+                    >Deletar</Button>
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </DropdownMenuContent>
       </DropdownMenu>
   )
+}
+
+export function getDateParamFormatted (dateString: string) {
+  const date = new Date(dateString)
+  const formatted = date.toLocaleDateString('pt-BR')
+
+  return <div>{formatted}</div>
 }

@@ -1,5 +1,5 @@
 import { type ColumnDef } from '@tanstack/react-table'
-import { EditTableRow } from '../data-table'
+import { EditArtistTableRow, getDateParamFormatted } from '../data-table'
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
@@ -26,14 +26,16 @@ export const columns: ColumnDef<Artist>[] = [
   },
   {
     accessorKey: 'createdAt',
-    header: 'Criado em'
+    header: 'Criado em',
+    cell: ({ row }) => getDateParamFormatted(row.getValue('createdAt')),
   },
   {
     accessorKey: 'updatedAt',
-    header: 'Atualizado em'
+    header: 'Atualizado em',
+    cell: ({ row }) => getDateParamFormatted(row.getValue('updatedAt')),
   },
   {
     id: 'actions',
-    cell: () => EditTableRow
+    cell: ({ row }) => EditArtistTableRow({ row: row.original })
   }
 ]
