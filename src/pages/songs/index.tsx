@@ -1,10 +1,33 @@
-import { type NextPage } from 'next'
+import { type GetServerSideProps, type NextPage } from 'next'
 import Head from 'next/head'
 
 import { Separator } from '~/components/ui/separator'
 import Link from 'next/link'
 import { Dot } from 'lucide-react'
 import { api } from '~/utils/api'
+
+import { getServerAuthSession } from '~/server/auth'
+import { createServerSideHelpers } from '@trpc/react-query/server'
+import { appRouter } from '~/server/api/root'
+import { prisma } from '~/server/db'
+import superjson from 'superjson'
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const session = await getServerAuthSession(context)
+  const helpers = createServerSideHelpers({
+    router: appRouter,
+    ctx: { prisma, session },
+    transformer: superjson,
+  })
+
+  await helpers.songs.getAll.prefetch()
+
+  return {
+    props: {
+      trpcState: helpers.dehydrate(),
+    }
+  }
+}
 
 const Songs: NextPage = () => {
   let currentLetter = ''
