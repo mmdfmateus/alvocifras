@@ -5,7 +5,7 @@ import Image from 'next/image'
 import { api } from '~/utils/api'
 import { useRouter } from 'next/router'
 // import { ChordSheetSerializer } from 'chordsheetjs'
-import { ChordSheetSerializer, HtmlTableFormatter, Song, type SerializedSong } from 'chordsheetjs'
+import { ChordSheetSerializer, HtmlTableFormatter, Song } from 'chordsheetjs'
 import { appRouter } from '~/server/api/root'
 import { prisma } from '~/server/db'
 import superjson from 'superjson'
@@ -42,7 +42,7 @@ const Songs: NextPage = (props: InferGetServerSidePropsType<typeof getServerSide
   const { data: song, isLoading: isLoadingSong } = api.songs.getById.useQuery(router.query.id as string ?? '')
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-  const songParsed = isLoadingSong ? new Song() : serializer.deserialize(JSON.parse(song!.chords?.toString() ?? '') as SerializedSong)
+  const songParsed = isLoadingSong ? new Song() : serializer.deserialize(JSON.parse(song!.chords?.toString() ?? ''))
   console.log(songParsed)
 
   return (
