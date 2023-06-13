@@ -228,9 +228,9 @@ export function EditSongTableRow ({ song }: { song: { id: string, name: string }
 
           <DropdownMenuSeparator />
           <AlertDialog>
-            <AlertDialogTrigger asChild>
+            <AlertDialogTrigger asChild className='w-full rounded-md bg-destructive text-destructive-foreground hover:bg-destructive-foreground/90' >
               <DropdownMenuItem
-                className='w-full bg-destructive text-destructive-foreground hover:bg-red-100'
+                className='w-full bg-destructive text-destructive-foreground hover:bg-destructive-foreground/90'
                 onSelect={(event) => {
                   event.preventDefault()
                 }}
