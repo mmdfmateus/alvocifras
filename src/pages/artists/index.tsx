@@ -1,21 +1,21 @@
-import { type GetServerSideProps, type NextPage } from 'next'
+import { type NextPage, type GetStaticPropsContext } from 'next'
 import Head from 'next/head'
 
 import Image from 'next/image'
 import { Separator } from '~/components/ui/separator'
 import Link from 'next/link'
 import { api } from '~/utils/api'
-import { getServerAuthSession } from '~/server/auth'
 import { createServerSideHelpers } from '@trpc/react-query/server'
 import { appRouter } from '~/server/api/root'
 import { prisma } from '~/server/db'
 import superjson from 'superjson'
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  const session = await getServerAuthSession(context)
+export async function getStaticProps (
+  context: GetStaticPropsContext,
+) {
   const helpers = createServerSideHelpers({
     router: appRouter,
-    ctx: { prisma, session },
+    ctx: { prisma, session: null },
     transformer: superjson,
   })
 
@@ -24,7 +24,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   return {
     props: {
       trpcState: helpers.dehydrate(),
-    }
+    },
+    revalidate: 60 * 60 * 24,
   }
 }
 
