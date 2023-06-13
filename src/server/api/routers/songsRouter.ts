@@ -95,4 +95,14 @@ export const songsRouter = createTRPCRouter({
 
       return result.id
     }),
+
+  delete: protectedProcedure
+    .input(z.string().uuid())
+    .mutation(async ({ input, ctx }) => {
+      return await ctx.prisma.song.delete({
+        where: {
+          id: input,
+        },
+      })
+    }),
 })

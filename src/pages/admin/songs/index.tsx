@@ -13,104 +13,20 @@ import {
   DialogTitle,
   DialogTrigger
 } from '@/components/ui/dialog'
-import { Input } from '@/components/ui/input'
-import { z } from 'zod'
-import { useForm } from 'react-hook-form'
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage
-} from '@/components/ui/form'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue
-} from '@/components/ui/select'
-import { zodResolver } from '@hookform/resolvers/zod'
-import Link from 'next/link'
-import { Textarea } from '~/components/ui/textarea'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { api } from '~/utils/api'
-import { ChordsOverWordsParser, HtmlTableFormatter } from 'chordsheetjs'
-import { ChordsPreview } from '~/components/chordsViewer/ChordsPreview'
-import { Label } from '@radix-ui/react-label'
+import AddSongForm from '~/components/AddSongForm'
 
 const Songs: NextPage = () => {
   const [open, setOpen] = useState(false)
 
   const { data: songs, isLoading: isLoadingSongs } = api.songs.getAll.useQuery()
-  const { data: artists, isLoading: isLoadingArtists } = api.artists.getAll.useQuery()
-  const { songs: songsContext } = api.useContext()
-  const { mutateAsync, isLoading: isCreating } = api.songs.create.useMutation({
-    onSuccess (data, variables, context) {
-      form.reset()
-      void songsContext.invalidate()
-      setOpen(false)
-    }
-  })
-
-  const formSchema = z.object({
-    name: z.string().min(4, 'Nome precisa ter mais de 4 caracteres').max(50, 'Nome não pode ter mais de 50 caracteres'),
-    artistId: z.string({ required_error: 'Escolha um artista' }).nonempty('Escolha um artista'),
-    chords: z.string().refine((data) => !isError, { message: 'Cifra inválida' }),
-  })
-
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      name: '',
-      artistId: '',
-      chords: '',
-    }
-  })
-
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    console.log(values)
-    if (song.length === 0) {
-      form.setError('chords', { message: 'Digite a cifra' })
-      return
-    }
-    await mutateAsync({ ...values, chords: song })
-    form.reset()
-  }
-
-  const [song, setSong] = useState<string>('<div></div>')
-  const [content, setContent] = useState<string>('')
-  const [isError, setIsError] = useState<boolean>(false)
-
-  const validateChords = (content: string) => {
-    try {
-      setIsError(false)
-      const parser = new ChordsOverWordsParser()
-      const formatter = new HtmlTableFormatter()
-      const song = parser.parse(content)
-
-      setSong(formatter.format(song))
-      setIsError(false)
-      return true
-    } catch (err) {
-      console.log(err)
-      setIsError(true)
-      // setError && setError(true)
-      return false
-    }
-  }
-
-  useEffect(() => {
-    validateChords(content)
-  }, [content, isError])
 
   return (
     <>
       <Head>
         <title>Músicas - Alvo Cifras</title>
-        <meta name="description" content="Todos as músicas presentes no Alvo Cifras" />
+        <meta name="description" content="Todas as músicas presentes no Alvo Cifras" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
         <main className="flex w-screen flex-col items-center justify-center">
@@ -128,81 +44,7 @@ const Songs: NextPage = () => {
                         <DialogHeader>
                             <DialogTitle>Cadastrar música</DialogTitle>
                         </DialogHeader>
-                        <Form {...form}>
-                            <form onSubmit={form.handleSubmit(onSubmit)} className='grid grid-cols-2 gap-6'>
-                                <FormField
-                                    control={form.control}
-                                    name="name"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Nome</FormLabel>
-                                            <FormControl>
-                                                <Input disabled={isCreating} placeholder="Algo melhor" {...field} />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                                <FormField
-                                    control={form.control}
-                                    name="artistId"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Artista</FormLabel>
-                                            { !isLoadingArtists && artists && <Select disabled={isCreating} onValueChange={field.onChange} defaultValue={field.value}>
-                                                <FormControl>
-                                                    <SelectTrigger>
-                                                        <SelectValue placeholder="Escolha o artista" />
-                                                    </SelectTrigger>
-                                                </FormControl>
-                                                <SelectContent>
-                                                    {artists.map((artist) => (
-                                                        <SelectItem key={artist.id} value={artist.id}>{artist.name}</SelectItem>
-                                                    ))}
-                                                </SelectContent>
-                                            </Select>}
-                                            <FormDescription>
-                                                Caso não exista o artista desejado, você precisa adiciona-lo primeiro{' '}
-                                                <Link href="/admin/artists" className='underline hover:text-primary'>aqui</Link>.
-                                            </FormDescription>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                                <FormField
-                                    control={form.control}
-                                    name="chords"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel >Cifra</FormLabel>
-                                            <FormControl>
-                                                <Textarea
-                                                  placeholder='Cole aqui a cifra da música'
-                                                  {...field}
-                                                  rows={15}
-                                                  className='max-h-80'
-                                                  onChange={(data) => setContent(data.target.value)}
-                                                  value={content}
-                                                  disabled={isCreating}
-                                                />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                                <div className='h-full'>
-                                  <Label className='text-muted-foreground'>Preview</Label>
-                                  <ChordsPreview
-                                    placeholder='Veja aqui como ficará a cifra e faça os ajustes que desejar'
-                                    label='Preview'
-                                    description='A cifra será salva da maneira que está sendo exibida acima, faça os ajustes necessários'
-                                    songAsHtml={song}
-                                    isError={isError}
-                                    />
-                                </div>
-                                <Button className='col-span-2' isLoading={isCreating} size={'lg'}>Submit</Button>
-                            </form>
-                        </Form>
+                        <AddSongForm setOpen={setOpen} />
                     </DialogContent>
                 </Dialog>
             </div>
