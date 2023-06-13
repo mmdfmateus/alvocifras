@@ -15,11 +15,6 @@ import { getServerAuthSession } from '~/server/auth'
 const serializer = new ChordSheetSerializer()
 const formatter = new HtmlTableFormatter()
 
-// type SerializedSong = {
-//   type: 'chordSheet';
-//   lines: SerializedLine[];
-// }
-
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getServerAuthSession(context)
   const helpers = createServerSideHelpers({
