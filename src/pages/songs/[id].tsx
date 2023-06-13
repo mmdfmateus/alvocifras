@@ -1,25 +1,40 @@
-import { type GetServerSideProps, type NextPage, type InferGetServerSidePropsType } from 'next'
+import { type NextPage, type GetStaticProps, type GetStaticPaths, type InferGetStaticPropsType } from 'next'
 import Head from 'next/head'
 import Image from 'next/image'
 
 import { api } from '~/utils/api'
-import { useRouter } from 'next/router'
-// import { ChordSheetSerializer } from 'chordsheetjs'
 import { ChordSheetSerializer, HtmlTableFormatter, Song } from 'chordsheetjs'
 import { appRouter } from '~/server/api/root'
 import { prisma } from '~/server/db'
 import superjson from 'superjson'
 import { createServerSideHelpers } from '@trpc/react-query/server'
-import { getServerAuthSession } from '~/server/auth'
 
 const serializer = new ChordSheetSerializer()
 const formatter = new HtmlTableFormatter()
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  const session = await getServerAuthSession(context)
+export const getStaticPaths: GetStaticPaths = async () => {
+  const songs = await prisma.song.findMany({
+    select: {
+      id: true,
+    },
+  })
+
+  return {
+    paths: songs.map((song) => ({
+      params: {
+        id: song.id,
+      },
+    })),
+    // https://nextjs.org/docs/pages/api-reference/functions/get-static-paths#fallback-blocking
+    fallback: 'blocking',
+  }
+}
+
+export const getStaticProps: GetStaticProps = async (context) => {
+  // const session = await getServerAuthSession(context)
   const helpers = createServerSideHelpers({
     router: appRouter,
-    ctx: { prisma, session },
+    ctx: { prisma, session: null },
     transformer: superjson,
   })
 
@@ -32,17 +47,18 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   return {
     props: {
       trpcState: helpers.dehydrate(),
-    }
+      id
+    },
+    revalidate: 60 * 60
   }
 }
 
-const Songs: NextPage = (props: InferGetServerSidePropsType<typeof getServerSideProps>) => {
-  const router = useRouter()
-
-  const { data: song, isLoading: isLoadingSong } = api.songs.getById.useQuery(router.query.id as string ?? '')
+const Songs: NextPage = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+  const { data: song, isLoading: isLoadingSong } = api.songs.getById.useQuery(props.id)
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-  const songParsed = isLoadingSong ? new Song() : serializer.deserialize(JSON.parse(song!.chords?.toString() ?? ''))
+  const songParsed = isLoadingSong ? new Song() : serializer.deserialize(JSON.parse(song?.chords?.toString() ?? ''))
   console.log(songParsed)
 
   return (
