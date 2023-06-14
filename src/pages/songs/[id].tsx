@@ -13,21 +13,18 @@ const serializer = new ChordSheetSerializer()
 const formatter = new HtmlTableFormatter()
 
 export const getStaticPaths: GetStaticPaths = async () => {
-  const songs = await prisma.artist.findMany({
+  const songs = await prisma.song.findMany({
     select: {
       id: true,
     },
   })
 
-  console.log('songssssss', songs)
-
   return {
-    // paths: songs.map((song) => ({
-    //   params: {
-    //     id: song.id,
-    //   },
-    // })),
-    paths: [],
+    paths: songs.map((song) => ({
+      params: {
+        id: song.id,
+      },
+    })),
     // https://nextjs.org/docs/pages/api-reference/functions/get-static-paths#fallback-blocking
     fallback: 'blocking',
   }
