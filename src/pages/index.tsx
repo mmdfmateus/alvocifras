@@ -3,26 +3,12 @@ import Head from 'next/head'
 
 import Image from 'next/image'
 import { HomeCard } from '~/components/HomeCard'
-
-const songs = [
-  {
-    song: 'Algo melhor',
-    artist: 'Sujeito a Reboque',
-    imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQd-msomLi9iPCsy56AD6P6qV52munNoPtoztyiRgsFRoO3E2YTQobSBR9mbo6-YEW4DXw&usqp=CAU'
-  },
-  {
-    song: 'Algo melhor',
-    artist: 'Sujeito a Reboque',
-    imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQd-msomLi9iPCsy56AD6P6qV52munNoPtoztyiRgsFRoO3E2YTQobSBR9mbo6-YEW4DXw&usqp=CAU'
-  },
-  {
-    song: 'Algo melhor',
-    artist: 'Sujeito a Reboque',
-    imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQd-msomLi9iPCsy56AD6P6qV52munNoPtoztyiRgsFRoO3E2YTQobSBR9mbo6-YEW4DXw&usqp=CAU'
-  }
-]
+import { api } from '~/utils/api'
 
 const Home: NextPage = () => {
+  const { data: songs, isLoading: isLoadingSongs } = api.songs.getAll.useQuery({ take: 3, includeArtist: true })
+  const { data: artists, isLoading: isLoadingArtists } = api.artists.getAll.useQuery({ take: 3 })
+
   return (
     <>
       <Head>
@@ -36,146 +22,58 @@ const Home: NextPage = () => {
       </Head>
         <main className="flex w-screen flex-col items-center justify-center">
           <div className="container flex flex-col md:flex-row items-center justify-center gap-12 px-4 py-16">
-            <HomeCard title='Músicas' buttonText='Ver todas'>
-              {songs.map((song, index) => (
-                <div
-                  key={index}
-                  className="mb-4 h-16 flex items-center p-2 rounded-md hover:bg-slate-100 last:mb-0"
-                >
-                  <Image
-                    src={`${song.imageUrl}.jpg`}
-                    alt='artista'
-                    height={48}
-                    width={48}
-                    className='h-12 w-12 rounded-full mr-4'
-                  />
-                  <div className="space-y-1">
-                    <p className="text-sm font-semibold leading-none">
-                      {song.song}
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                      {song.artist}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </HomeCard>
-            <HomeCard title='Artistas' buttonText='Ver todos'>
-              {songs.map((song, index) => (
-                <div
-                key={index}
-                  className="mb-4 h-16 flex items-center p-2 rounded-md hover:bg-slate-100 last:mb-0"
-                >
-                  <Image
-                    src={`${song.imageUrl}.jpg`}
-                    alt='artista'
-                    height={48}
-                    width={48}
-                    className='h-12 w-12 rounded-full mr-4'
+            { isLoadingSongs && <h2>Carregando...</h2> }
+            { !isLoadingSongs && <HomeCard title='Músicas' buttonTitle='Ver todas'>
+                {songs!.map((song, index) => (
+                  <div
+                    key={index}
+                    className="mb-4 h-16 flex items-center p-2 rounded-md hover:bg-slate-100 last:mb-0"
+                  >
+                    <Image
+                      src={`${song.artist.imageUrl}`}
+                      alt='artista'
+                      height={48}
+                      width={48}
+                      className='h-12 w-12 rounded-full mr-4'
                     />
-                  <div className="space-y-1 flex items-center">
-                    <p className="text-sm font-semibold leading-none">
-                      {song.artist}
-                    </p>
+                    <div className="space-y-1">
+                      <p className="text-sm font-semibold leading-none">
+                        {song.name}
+                      </p>
+                      <p className="text-sm text-muted-foreground">
+                        {song.artist.name}
+                      </p>
+                    </div>
                   </div>
-                </div>
-              ))}
-            </HomeCard>
-          </div>
-          <div className="container flex flex-col md:flex-row items-center justify-center gap-12 px-4 py-16">
-            <HomeCard title='Músicas' buttonText='Ver todas'>
-              {songs.map((song, index) => (
-                <div
+                ))}
+              </HomeCard>
+            }
+
+            { isLoadingArtists && <h2>Carregando...</h2> }
+            { !isLoadingArtists && <HomeCard title='Artistas' buttonTitle='Ver todos'>
+                {artists!.map((artist, index) => (
+                  <div
                   key={index}
-                  className="mb-4 h-16 flex items-center p-2 rounded-md hover:bg-slate-100 last:mb-0"
-                >
-                  <Image
-                    src={`${song.imageUrl}.jpg`}
-                    alt='artista'
-                    height={48}
-                    width={48}
-                    className='h-12 w-12 rounded-full mr-4'
-                  />
-                  <div className="space-y-1">
-                    <p className="text-sm font-semibold leading-none">
-                      {song.song}
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                      {song.artist}
-                    </p>
+                    className="mb-4 h-16 flex items-center p-2 rounded-md hover:bg-slate-100 last:mb-0"
+                  >
+                    <Image
+                      src={`${artist.imageUrl}`}
+                      alt='artista'
+                      height={48}
+                      width={48}
+                      className='h-12 w-12 rounded-full mr-4'
+                      />
+                    <div className="space-y-1 flex items-center">
+                      <p className="text-sm font-semibold leading-none">
+                        {artist.name}
+                      </p>
+                    </div>
                   </div>
-                </div>
-              ))}
-            </HomeCard>
-            <HomeCard title='Artistas' buttonText='Ver todos'>
-              {songs.map((song, index) => (
-                <div
-                key={index}
-                  className="mb-4 h-16 flex items-center p-2 rounded-md hover:bg-slate-100 last:mb-0"
-                >
-                  <Image
-                    src={`${song.imageUrl}.jpg`}
-                    alt='artista'
-                    height={48}
-                    width={48}
-                    className='h-12 w-12 rounded-full mr-4'
-                    />
-                  <div className="space-y-1 flex items-center">
-                    <p className="text-sm font-semibold leading-none">
-                      {song.artist}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </HomeCard>
+                ))}
+              </HomeCard>
+            }
           </div>
-          <div className="container flex flex-col md:flex-row items-center justify-center gap-12 px-4 py-16">
-            <HomeCard title='Músicas' buttonText='Ver todas'>
-              {songs.map((song, index) => (
-                <div
-                  key={index}
-                  className="mb-4 h-16 flex items-center p-2 rounded-md hover:bg-slate-100 last:mb-0"
-                >
-                  <Image
-                    src={`${song.imageUrl}.jpg`}
-                    alt='artista'
-                    height={48}
-                    width={48}
-                    className='h-12 w-12 rounded-full mr-4'
-                  />
-                  <div className="space-y-1">
-                    <p className="text-sm font-semibold leading-none">
-                      {song.song}
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                      {song.artist}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </HomeCard>
-            <HomeCard title='Artistas' buttonText='Ver todos'>
-              {songs.map((song, index) => (
-                <div
-                key={index}
-                  className="mb-4 h-16 flex items-center p-2 rounded-md hover:bg-slate-100 last:mb-0"
-                >
-                  <Image
-                    src={`${song.imageUrl}.jpg`}
-                    alt='artista'
-                    height={48}
-                    width={48}
-                    className='h-12 w-12 rounded-full mr-4'
-                    />
-                  <div className="space-y-1 flex items-center">
-                    <p className="text-sm font-semibold leading-none">
-                      {song.artist}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </HomeCard>
-          </div>
+
         </main>
     </>
   )

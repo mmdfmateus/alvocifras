@@ -12,7 +12,7 @@ import { type ReactNode } from 'react'
 
 type CardProps = React.ComponentProps<typeof Card> & {
     title: string,
-    buttonText: string,
+    buttonTitle: string,
     children?: ReactNode;
 }
 
@@ -30,7 +30,7 @@ export function HomeCard ({ className, ...props }: CardProps) {
       </CardContent>
       <CardFooter>
         <Button className="w-full">
-          {props.buttonText}
+          {props.buttonTitle}
         </Button>
       </CardFooter>
     </Card>

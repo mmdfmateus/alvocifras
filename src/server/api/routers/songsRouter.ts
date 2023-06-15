@@ -10,23 +10,38 @@ import {
 
 export const songsRouter = createTRPCRouter({
   getAll: publicProcedure
-    .output(
-      z.array(
-        z.object({
-          id: z.string().uuid(),
-          name: z.string(),
-          artist: z.string(),
-          createdAt: z.date(),
-          updatedAt: z.date(),
+    .input(
+      z
+        .object({
+          take: z.number().optional(),
+          includeArtist: z.boolean().default(false).optional(),
         })
-      )
+        .optional()
     )
-    .query(async ({ ctx }) => {
+    // .output(
+    //   z.array(
+    //     z.object({
+    //       id: z.string().uuid(),
+    //       name: z.string(),
+    //       artist: z.string(),
+    //       createdAt: z.date(),
+    //       updatedAt: z.date(),
+    //     })
+    //   )
+    // )
+    .query(async ({ ctx, input }) => {
       const response = await ctx.prisma.song.findMany({
         select: {
           id: true,
           name: true,
-          artist: true,
+          artist: input?.includeArtist
+            ? {
+                select: {
+                  imageUrl: true,
+                  name: true,
+                },
+              }
+            : true,
           createdAt: true,
           updatedAt: true,
         },
@@ -35,22 +50,24 @@ export const songsRouter = createTRPCRouter({
             name: 'asc',
           },
         ],
+        take: input?.take ?? 100,
       })
 
-      return response.map(
-        ({
-          artist,
-          ...song
-        }: { artist: Artist } & {
-          id: string
-          name: string
-          createdAt: Date
-          updatedAt: Date
-        }) => ({
-          artist: artist.name,
-          ...song,
-        })
-      )
+      return response
+      // return response.map(
+      //   ({
+      //     artist,
+      //     ...song
+      //   }: { artist: Artist } & {
+      //     id: string
+      //     name: string
+      //     createdAt: Date
+      //     updatedAt: Date
+      //   }) => ({
+      //     artist: artist.name,
+      //     ...song,
+      //   })
+      // )
     }),
 
   getById: publicProcedure

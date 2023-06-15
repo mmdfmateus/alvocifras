@@ -9,6 +9,7 @@ import {
 
 export const artistsRouter = createTRPCRouter({
   getAll: publicProcedure
+    .input(z.object({ take: z.number().optional() }).optional())
     .output(
       z.array(
         z.object({
@@ -20,7 +21,7 @@ export const artistsRouter = createTRPCRouter({
         })
       )
     )
-    .query(async ({ ctx }) => {
+    .query(async ({ ctx, input }) => {
       const response = await ctx.prisma.artist.findMany({
         select: {
           id: true,
@@ -34,6 +35,7 @@ export const artistsRouter = createTRPCRouter({
             name: 'asc',
           },
         ],
+        take: input?.take ?? 100,
       })
 
       return response
