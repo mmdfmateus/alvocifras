@@ -5,7 +5,7 @@ import { EditSongTableRow, getDateParamFormatted } from '../data-table'
 export type Song = {
   id: string
   name: string
-  artist: string
+  artist: { name: string, imageUrl: string }
   createdAt: Date
   updatedAt: Date
 }

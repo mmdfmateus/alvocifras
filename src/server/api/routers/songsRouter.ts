@@ -1,4 +1,3 @@
-import { type Artist } from '@prisma/client'
 import { TRPCError } from '@trpc/server'
 import { z } from 'zod'
 
@@ -18,17 +17,6 @@ export const songsRouter = createTRPCRouter({
         })
         .optional()
     )
-    // .output(
-    //   z.array(
-    //     z.object({
-    //       id: z.string().uuid(),
-    //       name: z.string(),
-    //       artist: z.string(),
-    //       createdAt: z.date(),
-    //       updatedAt: z.date(),
-    //     })
-    //   )
-    // )
     .query(async ({ ctx, input }) => {
       const response = await ctx.prisma.song.findMany({
         select: {
@@ -54,20 +42,6 @@ export const songsRouter = createTRPCRouter({
       })
 
       return response
-      // return response.map(
-      //   ({
-      //     artist,
-      //     ...song
-      //   }: { artist: Artist } & {
-      //     id: string
-      //     name: string
-      //     createdAt: Date
-      //     updatedAt: Date
-      //   }) => ({
-      //     artist: artist.name,
-      //     ...song,
-      //   })
-      // )
     }),
 
   getById: publicProcedure

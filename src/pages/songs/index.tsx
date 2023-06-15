@@ -69,7 +69,7 @@ const Songs: NextPage = () => {
                                   {song.name}
                                 </p>
                                 <p className="text-sm text-muted-foreground">
-                                  {song.artist}
+                                  {song.artist.name}
                                 </p>
                               </div>
                           </Link>
