@@ -13,32 +13,50 @@ import {
   FormMessage
 } from '@/components/ui/form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { type Dispatch, type SetStateAction, useState } from 'react'
+import { type Dispatch, type SetStateAction, useState, useTransition } from 'react'
 import { api } from '~/utils/api'
-import { UploadButton } from '@uploadthing/react'
+import { generateReactHelpers } from '@uploadthing/react/hooks'
 
 import type { CustomFileRouter } from '~/server/uploadthing'
 import Image from 'next/image'
+import { FileDialog, FileWithPreview } from './FileDialog'
+import toast from 'react-hot-toast'
 
 const formSchema = z.object({
   name: z.string().min(4).max(50),
-  imageUrl: z.string().url(),
+  image: z.unknown()
+    .refine((val) => {
+      if (!Array.isArray(val)) return false
+      if (val.some((file) => !(file instanceof File))) return false
+      return true
+    }, "Must be an array of File")
+    .optional(),
 })
 
 export interface AddArtistFormProps {
-    setOpen: Dispatch<SetStateAction<boolean>>,
-    existingForm?: { id: string} & z.infer<typeof formSchema>
+  setOpen: Dispatch<SetStateAction<boolean>>,
+  existingForm?: { id: string} & z.infer<typeof formSchema>
 }
+
+const { useUploadThing } = generateReactHelpers<CustomFileRouter>()
 
 const AddArtistForm = ({ setOpen, existingForm }: AddArtistFormProps) => {
   const [imageUploaded, setImageUploaded] = useState(false)
-
+  const [files, setFiles] = useState<FileWithPreview[] | null>(null)
+  const [isPending, startTransition] = useTransition()
+  
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
+    reValidateMode: 'onSubmit',
     defaultValues: {
       name: existingForm?.name ?? '',
-      imageUrl: existingForm?.imageUrl ?? '',
+      image: existingForm?.image ?? '',
     }
+  })
+
+  // uploadthing
+  const { isUploading, startUpload } = useUploadThing({
+    endpoint: 'imageUploader'
   })
 
   const { artists: artistsContext } = api.useContext()
@@ -59,19 +77,58 @@ const AddArtistForm = ({ setOpen, existingForm }: AddArtistFormProps) => {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
 
-    const action = existingForm
-      ? editAsync({ id: existingForm.id, ...values })
-      : createAsync(values)
-    await action
-    setOpen(false)
-    await artistsContext.invalidate()
+    console.log(values)
 
-    setImageUploaded(false)
+    startTransition(async () => {
+      try {
+
+        // Upload images if data.images is an array of files
+        const image = await toast
+          .promise(startUpload(values.image as File[]), {
+            loading: "Salvando imagem",
+            success: "Imagem salva com sucesso",
+            error: "Algum erro ocorreu ao salvar a imagem",
+          })
+          .then((res) => {
+            console.log(res)
+            const formattedImages = res?.map((image) => ({
+              id: image.fileKey,
+              name: image.fileKey.split("_")[1] ?? image.fileKey,
+              url: image.fileUrl,
+            })) ?? []
+
+            return formattedImages[0] ?? null
+          })
+
+        console.log(image)
+
+        const action = existingForm
+          ? editAsync({ id: existingForm.id, name: values.name, imageUrl: image?.url! })
+          : createAsync({ name: values.name, imageUrl: image?.url! })
+        await action
+        setOpen(false)
+        await artistsContext.invalidate()
+        
+        setImageUploaded(false)
+
+        toast.success("Artista adicionado com sucesso")
+
+        // Reset form and files
+        form.reset()
+        setFiles(null)
+      } catch (error) {
+        error instanceof Error
+          ? toast.error(error.message)
+          : toast.error("Algum erro ocorreu ao salvar o artista")
+      }
+    })
+
+    
   }
 
   return (
     <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className='grid grid-cols-2 gap-6 items-center'>
+        <form onSubmit={form.handleSubmit(onSubmit)} className='flex flex-col gap-7'>
             <FormField
                 control={form.control}
                 name="name"
@@ -90,40 +147,26 @@ const AddArtistForm = ({ setOpen, existingForm }: AddArtistFormProps) => {
             />
             <FormField
                 control={form.control}
-                name="imageUrl"
+                name="image"
                 render={({ field }) => (
                     <FormItem>
-                        <FormLabel>Link da imagem</FormLabel>
+                        <FormLabel>Imagem</FormLabel>
                         <FormControl>
                             <div className='flex items-center justify-center'>
-                            {/* <Input placeholder="https://site.com/image.jpeg" {...field} /> */}
-                            { (imageUploaded || existingForm?.imageUrl) &&
-                                <Image
-                                src={form.getValues('imageUrl')}
-                                alt='Artista'
-                                width={144}
-                                height={144}
-                                className='h-36 w-36 rounded-md'/>
-                                }
-                            { (!imageUploaded && !existingForm?.imageUrl) &&
-                                <UploadButton<CustomFileRouter>
-                                    endpoint="imageUploader"
-                                    onClientUploadComplete={(res) => {
-                                      console.log('Files: ', res)
-                                      if (res && res.length > 0) {
-                                        form.setValue('imageUrl', res[0]?.fileUrl ?? '')
-                                        setImageUploaded(true)
-                                      }
-                                    }}
-                                    onUploadError={(error: Error) => {
-                                      setImageUploaded(false)
-                                      alert(`ERROR! ${error.message}`)
-                                    }}
-                                />
-                                }
+                              { (!imageUploaded && !existingForm?.image) &&
+                                  <FileDialog
+                                    setValue={form.setValue}
+                                    name='image'
+                                    maxFiles={1}
+                                    maxSize={1024 * 1024 * 4}
+                                    files={files}
+                                    setFiles={setFiles}
+                                    isUploading={isUploading}
+                                    disabled={isPending}
+                                  />
+                              }
                             </div>
                         </FormControl>
-                        <FormDescription>O link precisa terminar com .jpeg ou .jpg</FormDescription>
                         <FormMessage />
                     </FormItem>
                 )}

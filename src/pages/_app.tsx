@@ -8,6 +8,7 @@ import '~/styles/globals.css'
 import '~/styles/chordsStyles.css'
 import '@uploadthing/react/styles.css'
 import { Header } from '~/components/Header'
+import { Toaster } from 'react-hot-toast'
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
@@ -15,6 +16,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
 }) => {
   return (
     <SessionProvider session={session}>
+      <Toaster />
       <Header />
       <Component className='container max-w-screen-lg' {...pageProps} />
     </SessionProvider>

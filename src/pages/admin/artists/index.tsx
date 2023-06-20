@@ -40,7 +40,7 @@ const Artists: NextPage = () => {
                             <span className='text-md font-semibold'>Cadastrar artista</span>
                         </Button>
                     </DialogTrigger>
-                    <DialogContent className="container md:max-w-screen-lg">
+                    <DialogContent className="container md:max-w-screen-sm">
                         <DialogHeader>
                             <DialogTitle>Cadastrar artista</DialogTitle>
                         </DialogHeader>

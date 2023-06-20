@@ -142,7 +142,7 @@ export function EditArtistTableRow ({ row }: { row: Artist }) {
                 <DialogHeader>
                     <DialogTitle>Cadastrar artista</DialogTitle>
                 </DialogHeader>
-                <AddArtistForm setOpen={setOpen} existingForm={{ id: row.id, name: row.name, imageUrl: row.imageUrl }} />
+                <AddArtistForm setOpen={setOpen} existingForm={{ id: row.id, name: row.name, image: row.imageUrl }} />
             </DialogContent>
           </Dialog>
 
