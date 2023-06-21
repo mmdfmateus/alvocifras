@@ -3,7 +3,7 @@ import { type Session } from 'next-auth'
 import { SessionProvider } from 'next-auth/react'
 import { Header } from '~/components/Header'
 import { Toaster } from 'react-hot-toast'
-import { Analytics } from '@vercel/analytics/react';
+import { Analytics } from '@vercel/analytics/react'
 
 import { api } from '~/utils/api'
 

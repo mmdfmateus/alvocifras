@@ -21,7 +21,6 @@ import 'cropperjs/dist/cropper.css'
 
 import { cn, formatBytes } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
-import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog'
 import { Icons } from './Icons'
 export type FileWithPreview = FileWithPath & {
     preview: string
@@ -55,6 +54,7 @@ export function FileDialog<TFieldValues extends FieldValues> ({
   className,
   ...props
 }: FileDialogProps<TFieldValues>) {
+  console.log(files)
   const onDrop = React.useCallback(
     (acceptedFiles: FileWithPath[], rejectedFiles: FileRejection[]) => {
       setValue(
@@ -109,7 +109,7 @@ export function FileDialog<TFieldValues extends FieldValues> ({
 
   return (
     <div>
-      { !(files?.length) && 
+      { !(files?.length) &&
         <div
           {...getRootProps()}
           className={cn(
@@ -118,7 +118,7 @@ export function FileDialog<TFieldValues extends FieldValues> ({
             isDragActive && 'border-muted-foreground/50',
             disabled && 'pointer-events-none opacity-60',
             className
-            )}
+          )}
             {...props}
             >
           <input {...getInputProps()} />
@@ -131,7 +131,7 @@ export function FileDialog<TFieldValues extends FieldValues> ({
                   />
               </div>
               )
-              : isDragActive
+            : isDragActive
               ? (
                 <div className="grid place-items-center gap-2 text-muted-foreground sm:px-5">
                   <Icons.upload
@@ -141,8 +141,7 @@ export function FileDialog<TFieldValues extends FieldValues> ({
                   <p className="text-base font-medium">Solte a imagem aqui</p>
                 </div>
                 )
-                : 
-                (
+              : (
                 <div className="grid place-items-center gap-1 sm:px-5">
                   <Icons.upload
                     className="h-8 w-8 text-muted-foreground"
@@ -160,7 +159,7 @@ export function FileDialog<TFieldValues extends FieldValues> ({
       <p className="text-center text-sm font-medium text-muted-foreground">
         O tamanho máximo do arquivo é {maxFiles} {maxFiles === 1 ? 'file' : 'files'}
       </p>
-        </div> 
+        </div>
       }
       {files?.length
         ? (
@@ -175,10 +174,10 @@ export function FileDialog<TFieldValues extends FieldValues> ({
               setFiles={setFiles}
               file={file}
             />
-            ))}
+          ))}
         </div>
           )
-          : null}
+        : null}
     </div>
   )
 }
@@ -281,8 +280,8 @@ function FileCard<TFieldValues extends FieldValues> ({
                 {
                   shouldValidate: true,
                 }
-                )
-              }}
+              )
+            }}
               >
             <Icons.close className="h-4 w-4" aria-hidden="true" />
             <span className="sr-only">Remover</span>
@@ -347,7 +346,7 @@ function FileCard<TFieldValues extends FieldValues> ({
             </div>
           </div>
         </div>
-      )}     
+      )}
     </div>
   )
 }
