@@ -61,7 +61,7 @@ const Songs: NextPage = () => {
                           <Link
                             href={`/songs/${song.id}`}
                             key={index}
-                            className="mb-2 h-16 flex items-center p-2 rounded-md hover:bg-slate-100 last:mb-3"
+                            className="mb-2 h-16 flex items-center p-2 rounded-md hover:bg-primary-foreground last:mb-3"
                             >
                               <Dot size={36} />
                               <div className="space-y-1">

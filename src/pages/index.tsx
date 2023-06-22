@@ -27,7 +27,7 @@ const Home: NextPage = () => {
                 {songs!.map((song, index) => (
                   <div
                     key={index}
-                    className="mb-4 h-16 flex items-center p-2 rounded-md hover:bg-slate-100 last:mb-0"
+                    className="mb-4 h-16 flex items-center p-2 rounded-md hover:bg-primary-foreground last:mb-0"
                   >
                     <Image
                       src={`${song.artist.imageUrl}`}
@@ -54,7 +54,7 @@ const Home: NextPage = () => {
                 {artists!.map((artist, index) => (
                   <div
                   key={index}
-                    className="mb-4 h-16 flex items-center p-2 rounded-md hover:bg-slate-100 last:mb-0"
+                    className="mb-4 h-16 flex items-center p-2 rounded-md hover:bg-primary-foreground last:mb-0"
                   >
                     <Image
                       src={`${artist.imageUrl}`}

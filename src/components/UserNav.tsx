@@ -36,7 +36,7 @@ export function UserNav ({ user }: UserNavProps) {
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-56 bg-white" align="end" forceMount>
+      <DropdownMenuContent className="w-56 bg-primary-foreground" align="end" forceMount>
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
             <p className="text-sm font-medium leading-none">{user.name}</p>
@@ -47,11 +47,11 @@ export function UserNav ({ user }: UserNavProps) {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuItem className='hover:bg-slate-200'>
+          <DropdownMenuItem className='hover:bg-primary-foreground'>
             <User className="mr-2 h-4 w-4" />
             <span>Profile</span>
           </DropdownMenuItem>
-          <DropdownMenuItem className='hover:bg-slate-200'>
+          <DropdownMenuItem className='hover:bg-primary-foreground'>
             <Link
               href={'/admin/songs'}
               className='flex items-center'
@@ -60,7 +60,7 @@ export function UserNav ({ user }: UserNavProps) {
               <span>Cadastrar música</span>
             </Link>
           </DropdownMenuItem>
-          <DropdownMenuItem className='hover:bg-slate-200'>
+          <DropdownMenuItem className='hover:bg-primary-foreground'>
             <Link
               href={'/admin/artists'}
               className='flex items-center'
@@ -71,7 +71,7 @@ export function UserNav ({ user }: UserNavProps) {
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem className='cursor-pointer hover:bg-slate-200' onClick={() => signOut()}>
+        <DropdownMenuItem className='cursor-pointer hover:bg-primary-foreground' onClick={() => signOut()}>
           <LogOut className="mr-2 h-4 w-4" />
           <span>Log out</span>
         </DropdownMenuItem>

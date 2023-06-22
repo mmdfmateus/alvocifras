@@ -5,6 +5,7 @@ import { type User, UserNav } from './UserNav'
 import { signIn, useSession } from 'next-auth/react'
 import { Button } from './ui/button'
 import Link from 'next/link'
+import { ThemeToggle } from './ThemeToggle'
 
 export const Header = () => {
   const session = useSession()
@@ -13,7 +14,7 @@ export const Header = () => {
 
   return (
     <header className='sticky'>
-        <section className="sticky container max-w-screen-lg top-0 bg-white flex h-16 items-center px-4">
+        <section className="sticky container max-w-screen-lg top-0 bg-primary-foreground flex h-16 items-center px-4">
             <Link
                 href={'/'}
                 >
@@ -29,10 +30,11 @@ export const Header = () => {
             <div>
                 <Input
                     type="search"
-                    placeholder="Search..."
+                    placeholder="Procure por uma música..."
                     className="h-9 md:w-40 lg:w-80 focus:outline-none"
                     />
             </div>
+            <ThemeToggle />
             { session.status === 'authenticated' &&
               <UserNav user={session.data.user as User} />
             }
