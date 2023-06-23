@@ -2,7 +2,7 @@ import Link from 'next/link'
 
 import { cn } from '~/lib/utils'
 
-const linkStyle = 'text-sm font-medium transition-colors text-slate-500 hover:text-slate-800'
+const linkStyle = 'text-sm font-semibold transition-colors text-slate-500 hover:text-slate-800'
 
 export function MainNav ({
   className,
