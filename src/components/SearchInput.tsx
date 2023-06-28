@@ -9,41 +9,27 @@ import { cn } from '~/lib/utils'
 import { api } from '~/utils/api'
 import Image from 'next/image'
 import { Label } from './ui/label'
+import { useDebouncedValue } from '@mantine/hooks'
 
 export type InputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   wrapperclassName: string
 }
 
 export const SearchInput = (props: InputProps) => {
-  const [searchTerm, setSearchTerm] = useState('')
+  const [valueTyped, setValueTyped] = useState('')
+  const [searchTerm] = useDebouncedValue(valueTyped, 200)
   const [isOpen, setIsOpen] = useState(false)
-  // const [searchResults, setSearchResults] = useState<SearchResult[]>([])
-  // const [timeoutId, setTimeoutId] = useState<number | null>(null)
   const { data, isLoading, isFetched } = api.search.searchByName.useQuery({ searchTerm }, {
     queryKey: ['search.searchByName', { searchTerm }]
   })
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = event.target
-    setSearchTerm(value)
+    setValueTyped(value)
     setIsOpen(true)
-
-    if (value.length > 2) {
-      // Perform the search after a short delay
-      // to avoid making too many requests while typing
-      // if (timeoutId) {
-      //   clearTimeout(timeoutId)
-      // }
-      // const id = setTimeout(performSearch, 300)
-      // setTimeoutId(id)
-    } else {
-      // If the search term is too short, clear the results
-      // setSearchResults([])
-    }
   }
 
   const handleBlur = () => {
-    // Close the dropdown when the input loses focus
     setIsOpen(false)
   }
 
@@ -53,8 +39,7 @@ export const SearchInput = (props: InputProps) => {
         type='search'
         placeholder="Procure por uma música ou artista"
         className="h-9 md:w-40 lg:w-80 focus:outline-none"
-        // onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => e.stopPropagation()}
-        value={searchTerm}
+        value={valueTyped}
         onChange={handleChange}
         onBlur={handleBlur}
         onFocus={() => setIsOpen(true)}
