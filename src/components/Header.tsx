@@ -23,17 +23,17 @@ export const Header = () => {
                     height={40}
                     />
             </Link>
-            <SearchInput className="block sm:hidden"/>
+            <SearchInput wrapperclassName="block sm:hidden"/>
             <MainNav className="mx-6 hidden sm:block" />
-            <div className="ml-auto flex items-center sm:space-x-4">
-                <SearchInput className="hidden sm:block"/>
+            <div className="flex gap-2 ml-auto items-center sm:space-x-4">
+                <SearchInput wrapperclassName="hidden sm:block"/>
                 <ThemeToggle />
                 { session.status === 'authenticated' &&
                     <UserNav user={session.data.user as User} />
                 }
                 { session.status === 'unauthenticated' &&
                     <>
-                        <span className='w-3'></span>
+                        {/* <span className='w-3'></span> */}
                         <Button
                             onClick={() => signIn()}
                             >
@@ -43,7 +43,7 @@ export const Header = () => {
                 }
             </div>
         </section>
-        <div className='sticky h-[1px] w-full border-b z-40 bg-red-500'></div>
+        <div className='w-full border-b z-40 bg-red-500'></div>
     </header>
   )
 }

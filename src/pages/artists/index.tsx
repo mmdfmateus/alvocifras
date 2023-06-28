@@ -51,7 +51,8 @@ const Artists: NextPage = () => {
                     artists.map((artist, index) => {
                       const showInitialLetter = artist.name.charAt(0).toLocaleUpperCase() !== currentLetter
                       currentLetter = artist.name.charAt(0).toLocaleUpperCase()
-                      return (<>
+                      return (
+                      <li key={artist.id}>
                           { showInitialLetter &&
                             <div>
                               <h3 className='text-2xl pb-1 pl-2'>{currentLetter}</h3>
@@ -76,7 +77,7 @@ const Artists: NextPage = () => {
                                 </p>
                               </div>
                           </Link>
-                      </>
+                      </li>
                       )
                     })
                   }

@@ -53,7 +53,7 @@ const Home: NextPage = () => {
             { !isLoadingArtists && <HomeCard title='Artistas' buttonTitle='Ver todos'>
                 {artists!.map((artist, index) => (
                   <div
-                  key={index}
+                    key={index}
                     className="mb-4 h-16 flex items-center p-2 rounded-md hover:bg-primary-foreground last:mb-0"
                   >
                     <Image
