@@ -54,7 +54,6 @@ export function FileDialog<TFieldValues extends FieldValues> ({
   className,
   ...props
 }: FileDialogProps<TFieldValues>) {
-  console.log(files)
   const onDrop = React.useCallback(
     (acceptedFiles: FileWithPath[], rejectedFiles: FileRejection[]) => {
       setValue(

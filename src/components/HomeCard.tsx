@@ -9,10 +9,12 @@ import {
   CardTitle
 } from '~/components/ui/card'
 import { type ReactNode } from 'react'
+import Link from 'next/link'
 
 type CardProps = React.ComponentProps<typeof Card> & {
     title: string,
     buttonTitle: string,
+    buttonRedirectTo: string,
     children?: ReactNode;
 }
 
@@ -29,9 +31,11 @@ export function HomeCard ({ className, ...props }: CardProps) {
         </div>
       </CardContent>
       <CardFooter>
-        <Button className="w-full">
-          {props.buttonTitle}
-        </Button>
+        <Link href={props.buttonRedirectTo} className="w-full" >
+          <Button className="w-full">
+            {props.buttonTitle}
+          </Button>
+        </Link>
       </CardFooter>
     </Card>
   )

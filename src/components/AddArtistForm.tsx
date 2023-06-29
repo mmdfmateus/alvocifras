@@ -54,8 +54,6 @@ export interface AddArtistFormProps {
 }
 
 const AddArtistForm = ({ setOpen, existingForm }: AddArtistFormProps) => {
-  console.log(existingForm)
-
   useEffect(() => {
     if (existingForm?.image) {
       const fileWithPreview = getFileFromExistingForm(existingForm)

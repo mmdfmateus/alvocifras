@@ -54,7 +54,6 @@ const AddSongForm = ({ setOpen, existingForm }: AddSongFormProps) => {
         setSongFinishedParsing(true)
       }
     })
-  //   console.log(status)
 
   const { songs: songsContext } = api.useContext()
   const [songFormatted, setSongFormatted] = useState<string>('<div></div>')
@@ -94,7 +93,6 @@ const AddSongForm = ({ setOpen, existingForm }: AddSongFormProps) => {
   })
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    console.log(values)
     if (songFormatted.length === 0) {
       form.setError('chords', { message: 'Digite a cifra' })
       return
@@ -114,7 +112,6 @@ const AddSongForm = ({ setOpen, existingForm }: AddSongFormProps) => {
 
       const song = parser.parse(content)
       setSong(song)
-      console.log(JSON.stringify(serializer.serialize(song)))
 
       setSongFormatted(tableFormatter.format(song))
       //   setIsError(false)

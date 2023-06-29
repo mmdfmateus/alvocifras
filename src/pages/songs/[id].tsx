@@ -59,7 +59,6 @@ const Songs: NextPage = (props: InferGetStaticPropsType<typeof getStaticProps>) 
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
   const songParsed = isLoadingSong ? new Song() : serializer.deserialize(JSON.parse(song?.chords?.toString() ?? ''))
-  console.log(songParsed)
 
   return (
     <>

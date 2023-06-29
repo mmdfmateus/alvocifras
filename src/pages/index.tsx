@@ -1,9 +1,32 @@
-import { type NextPage } from 'next'
+import type { GetStaticProps, NextPage } from 'next'
 import Head from 'next/head'
 
 import Image from 'next/image'
+import Link from 'next/link'
 import { HomeCard } from '~/components/HomeCard'
 import { api } from '~/utils/api'
+import { appRouter } from '~/server/api/root'
+import { prisma } from '~/server/db'
+import superjson from 'superjson'
+import { createServerSideHelpers } from '@trpc/react-query/server'
+
+export const getStaticProps: GetStaticProps = async () => {
+  const helpers = createServerSideHelpers({
+    router: appRouter,
+    ctx: { prisma, session: null },
+    transformer: superjson,
+  })
+
+  await helpers.songs.getAll.prefetch()
+  await helpers.artists.getAll.prefetch()
+
+  return {
+    props: {
+      trpcState: helpers.dehydrate(),
+    },
+    revalidate: 60 * 60
+  }
+}
 
 const Home: NextPage = () => {
   const { data: songs, isLoading: isLoadingSongs } = api.songs.getAll.useQuery({ take: 3, includeArtist: true })
@@ -23,9 +46,10 @@ const Home: NextPage = () => {
         <main className="flex w-screen flex-col items-center justify-center">
           <div className="container flex flex-col md:flex-row items-center justify-center gap-12 px-4 py-16">
             { isLoadingSongs && <h2>Carregando...</h2> }
-            { !isLoadingSongs && <HomeCard title='Músicas' buttonTitle='Ver todas'>
+            { !isLoadingSongs && <HomeCard title='Músicas' buttonTitle='Ver todas' buttonRedirectTo='/songs'>
                 {songs!.map((song, index) => (
-                  <div
+                  <Link
+                    href={`/songs/${song.id}`}
                     key={index}
                     className="mb-4 h-16 flex items-center p-2 rounded-md hover:bg-primary-foreground last:mb-0"
                   >
@@ -44,15 +68,16 @@ const Home: NextPage = () => {
                         {song.artist.name}
                       </p>
                     </div>
-                  </div>
+                  </Link>
                 ))}
               </HomeCard>
             }
 
             { isLoadingArtists && <h2>Carregando...</h2> }
-            { !isLoadingArtists && <HomeCard title='Artistas' buttonTitle='Ver todos'>
+            { !isLoadingArtists && <HomeCard title='Artistas' buttonTitle='Ver todos' buttonRedirectTo='/artists'>
                 {artists!.map((artist, index) => (
-                  <div
+                  <Link
+                    href={`/artists/${artist.id}`}
                     key={index}
                     className="mb-4 h-16 flex items-center p-2 rounded-md hover:bg-primary-foreground last:mb-0"
                   >
@@ -68,7 +93,7 @@ const Home: NextPage = () => {
                         {artist.name}
                       </p>
                     </div>
-                  </div>
+                  </Link>
                 ))}
               </HomeCard>
             }
