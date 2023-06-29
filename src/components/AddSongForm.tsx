@@ -62,7 +62,15 @@ const AddSongForm = ({ setOpen, existingForm }: AddSongFormProps) => {
   const [content, setContent] = useState<string>('')
   const [isError, setIsError] = useState<boolean>(false)
 
-  const { mutateAsync, isLoading: isCreating } = api.songs.create.useMutation({
+  const { mutateAsync: createAsync, isLoading: isCreating } = api.songs.create.useMutation({
+    onSuccess (data, variables, context) {
+      form.reset()
+      void songsContext.invalidate()
+      setOpen(false)
+    }
+  })
+
+  const { mutateAsync: editAsync, isLoading: isEditing } = api.songs.edit.useMutation({
     onSuccess (data, variables, context) {
       form.reset()
       void songsContext.invalidate()
@@ -91,7 +99,12 @@ const AddSongForm = ({ setOpen, existingForm }: AddSongFormProps) => {
       form.setError('chords', { message: 'Digite a cifra' })
       return
     }
-    await mutateAsync({ ...values, chords: JSON.stringify(serializer.serialize(song!)) })
+
+    const action = existingForm
+      ? editAsync({ ...values, id: existingForm.id, chords: JSON.stringify(serializer.serialize(song!)) })
+      : createAsync({ ...values, chords: JSON.stringify(serializer.serialize(song!)) })
+
+    await action
     form.reset()
   }
 
@@ -129,7 +142,10 @@ const AddSongForm = ({ setOpen, existingForm }: AddSongFormProps) => {
                     <FormItem>
                         <FormLabel>Nome</FormLabel>
                         <FormControl>
-                            <Input disabled={isCreating} placeholder="Algo melhor" {...field} />
+                            <Input
+                              disabled={isCreating || isEditing}
+                              placeholder="Algo melhor"
+                              {...field} />
                         </FormControl>
                         <FormMessage />
                     </FormItem>

@@ -87,6 +87,31 @@ export const songsRouter = createTRPCRouter({
       return result.id
     }),
 
+  edit: protectedProcedure
+    .input(
+      z.object({
+        id: z.string().uuid(),
+        name: z.string(),
+        artistId: z.string().uuid(),
+        chords: z.string(),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      const result = await ctx.prisma.song.update({
+        where: {
+          id: input.id
+        },
+        data: {
+          name: input.name,
+          artistId: input.artistId,
+          chords: input.chords,
+          lyrics: input.chords,
+        },
+      })
+
+      return result.id
+    }),
+
   delete: protectedProcedure
     .input(z.string().uuid())
     .mutation(async ({ input, ctx }) => {
