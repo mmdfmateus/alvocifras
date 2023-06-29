@@ -21,7 +21,8 @@ export const columns: ColumnDef<Song>[] = [
   },
   {
     accessorKey: 'artist',
-    header: 'Artista'
+    header: 'Artista',
+    cell: ({ row }) => (<div>{row.original.artist.name}</div>),
   },
   {
     accessorKey: 'createdAt',
