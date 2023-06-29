@@ -1,5 +1,5 @@
 import { Input } from './ui/input'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Card } from './ui/card'
 import Link from 'next/link'
 import { Dot } from 'lucide-react'
@@ -19,9 +19,27 @@ export const SearchInput = (props: InputProps) => {
   const [valueTyped, setValueTyped] = useState('')
   const [searchTerm] = useDebouncedValue(valueTyped, 200)
   const [isOpen, setIsOpen] = useState(false)
+  const searchInputRef = useRef<HTMLInputElement>(null)
   const { data, isLoading, isFetched } = api.search.searchByName.useQuery({ searchTerm }, {
     queryKey: ['search.searchByName', { searchTerm }]
   })
+
+  useEffect(() => {
+    const handleOutsideClick = (event: MouseEvent) => {
+      if (
+        searchInputRef.current &&
+        !searchInputRef.current.contains(event.target as Node)
+      ) {
+        setIsOpen(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleOutsideClick)
+
+    return () => {
+      document.removeEventListener('mousedown', handleOutsideClick)
+    }
+  }, [])
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = event.target
@@ -29,19 +47,17 @@ export const SearchInput = (props: InputProps) => {
     setIsOpen(true)
   }
 
-  const handleBlur = () => {
-    setIsOpen(false)
-  }
-
   return (
-    <div className={cn('relative z-500 flex-grow p-1', props.wrapperclassName)}>
+    <div
+      className={cn('relative z-500 flex-grow p-1', props.wrapperclassName)}
+      ref={searchInputRef}
+      >
       <Input
         type='search'
         placeholder="Procure por uma música ou artista"
         className="h-9 md:w-40 lg:w-80 focus:outline-none"
         value={valueTyped}
         onChange={handleChange}
-        onBlur={handleBlur}
         onFocus={() => setIsOpen(true)}
         {...props}
         />
@@ -66,6 +82,7 @@ export const SearchInput = (props: InputProps) => {
                 href={`/songs/${song.id}`}
                 key={song.id}
                 className="mb-2 h-16 z-50 flex items-center p-2 rounded-md hover:bg-primary-foreground last:mb-3"
+                onClick={() => setIsOpen(false)}
                 >
                   <Dot size={36} />
                   <div className="space-y-1">
@@ -98,6 +115,7 @@ export const SearchInput = (props: InputProps) => {
                 href={`/artists/${artist.id}`}
                 key={artist.id}
                 className="mb-2 h-16 z-50 flex items-center p-2 rounded-md hover:bg-primary-foreground last:mb-3"
+                onClick={() => setIsOpen(false)}
                 >
                   <Image
                     src={`${artist.imageUrl}`}
