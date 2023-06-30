@@ -38,7 +38,7 @@ export const songsRouter = createTRPCRouter({
             name: 'asc',
           },
         ],
-        take: input?.take ?? 3,
+        take: input?.take ?? 100,
       })
 
       return response
