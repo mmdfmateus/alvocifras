@@ -17,20 +17,20 @@ export const getStaticProps: GetStaticProps = async () => {
     transformer: superjson,
   })
 
-  await helpers.songs.getAll.prefetch()
-  await helpers.artists.getAll.prefetch()
+  await helpers.songs.getAll.prefetch({ take: 3, includeArtist: true })
+  await helpers.artists.getAll.prefetch({ take: 3 })
 
   return {
     props: {
       trpcState: helpers.dehydrate(),
     },
-    revalidate: 60 * 60
+    revalidate: 60 * 60 * 24
   }
 }
 
 const Home: NextPage = () => {
-  const { data: songs, isLoading: isLoadingSongs } = api.songs.getAll.useQuery({ take: 3, includeArtist: true })
-  const { data: artists, isLoading: isLoadingArtists } = api.artists.getAll.useQuery({ take: 3 })
+  const { data: songs } = api.songs.getAll.useQuery({ take: 3, includeArtist: true })
+  const { data: artists } = api.artists.getAll.useQuery({ take: 3 })
 
   return (
     <>
@@ -45,8 +45,8 @@ const Home: NextPage = () => {
       </Head>
         <main className="flex w-screen flex-col items-center justify-center">
           <div className="container flex flex-col md:flex-row items-center justify-center gap-12 px-4 py-16">
-            { isLoadingSongs && <h2>Carregando...</h2> }
-            { !isLoadingSongs && <HomeCard title='Músicas' buttonTitle='Ver todas' buttonRedirectTo='/songs'>
+            {/* { isLoadingSongs && <h2>Carregando...</h2> } */}
+            { <HomeCard title='Músicas' buttonTitle='Ver todas' buttonRedirectTo='/songs'>
                 {songs!.map((song, index) => (
                   <Link
                     href={`/songs/${song.id}`}
@@ -73,8 +73,8 @@ const Home: NextPage = () => {
               </HomeCard>
             }
 
-            { isLoadingArtists && <h2>Carregando...</h2> }
-            { !isLoadingArtists && <HomeCard title='Artistas' buttonTitle='Ver todos' buttonRedirectTo='/artists'>
+            {/* { isLoadingArtists && <h2>Carregando...</h2> } */}
+            { <HomeCard title='Artistas' buttonTitle='Ver todos' buttonRedirectTo='/artists'>
                 {artists!.map((artist, index) => (
                   <Link
                     href={`/artists/${artist.id}`}
