@@ -1,19 +1,60 @@
-import { type NextPage } from 'next'
+import { type InferGetStaticPropsType, type GetStaticPaths, type GetStaticProps, type NextPage } from 'next'
 import Head from 'next/head'
 import Image from 'next/image'
 
 import { api } from '~/utils/api'
-import { useRouter } from 'next/router'
 import { Separator } from '~/components/ui/separator'
 import Link from 'next/link'
 import { Dot } from 'lucide-react'
+import { appRouter } from '~/server/api/root'
+import { prisma } from '~/server/db'
+import superjson from 'superjson'
+import { createServerSideHelpers } from '@trpc/react-query/server'
 
-const ArtistPage: NextPage = () => {
+export const getStaticPaths: GetStaticPaths = async () => {
+  const artists = await prisma.artist.findMany({
+    select: {
+      id: true,
+    },
+  })
+
+  return {
+    paths: artists.map((artist) => ({
+      params: {
+        id: artist.id,
+      },
+    })),
+    // https://nextjs.org/docs/pages/api-reference/functions/get-static-paths#fallback-blocking
+    fallback: 'blocking',
+  }
+}
+
+export const getStaticProps: GetStaticProps = async (context) => {
+  const helpers = createServerSideHelpers({
+    router: appRouter,
+    ctx: { prisma, session: null },
+    transformer: superjson,
+  })
+
+  const id = context.params?.id
+
+  if (typeof id !== 'string') { throw new Error('no artist id') }
+
+  await helpers.artists.getById.prefetch(id)
+
+  return {
+    props: {
+      trpcState: helpers.dehydrate(),
+      id
+    },
+    revalidate: 60 * 60
+  }
+}
+
+const ArtistPage: NextPage = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
+  const { data: artist, isLoading: isLoadingArtist } = api.artists.getById.useQuery(props.id as string)
+
   let currentLetter = ''
-  const router = useRouter()
-
-  const { data: artist, isLoading: isLoadingArtist } = api.artists.getById.useQuery(router.query.id as string ?? '')
-
   return (
     <>
       <Head>
