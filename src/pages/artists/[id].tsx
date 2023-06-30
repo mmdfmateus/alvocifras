@@ -18,7 +18,7 @@ const ArtistPage: NextPage = () => {
     <>
       <Head>
         <title>{artist?.name} - Alvo Cifras</title>
-        <meta name="description" content="Todos as músicas presentes no Alvo Cifras" />
+        <meta name="description" content={`Aprenda as cifras do artista ${artist!.name} aqui no Alvo Cifras`} />
         <link rel="icon" href="/favicon.ico" />
       </Head>
         <main className="flex w-screen flex-col items-center">
