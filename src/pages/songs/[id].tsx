@@ -42,7 +42,7 @@ export const getStaticProps: GetStaticProps = async (context) => {
 
   if (typeof id !== 'string') { throw new Error('no song id') }
 
-  await helpers.songs.getById.fetch(id)
+  await helpers.songs.getById.prefetch(id)
 
   return {
     props: {
@@ -63,8 +63,8 @@ const Songs: NextPage = (props: InferGetStaticPropsType<typeof getStaticProps>) 
   return (
     <>
       <Head>
-        <title>Músicas - Alvo Cifras</title>
-        <meta name="description" content="Todos as músicas presentes no Alvo Cifras" />
+        <title>{song?.name} - {song?.artist.name}</title>
+        <meta name="description" content={`Aprenda a cifra de ${song!.name} do artista ${song!.artist.name} aqui no Alvo Cifras`} />
         <link rel="icon" href="/favicon.ico" />
       </Head>
         <main className="flex w-screen flex-col items-center">
