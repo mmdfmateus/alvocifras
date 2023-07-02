@@ -44,7 +44,8 @@ import AddArtistForm from '../AddArtistForm'
 import { useState } from 'react'
 import AddSongForm from '../AddSongForm'
 import { Spinner } from '../Spinner'
-// import { Spinner } from '../Spinner'
+import { Icons } from '../Icons'
+import { Label } from '../ui/label'
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
@@ -195,6 +196,7 @@ export function EditSongTableRow ({ song }: { song: { id: string, name: string }
   const { data: songData } = api.songs.getById.useQuery(song.id)
   const { songs: songsContext } = api.useContext()
   const [open, setOpen] = useState(false)
+  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
 
   return (
@@ -209,12 +211,14 @@ export function EditSongTableRow ({ song }: { song: { id: string, name: string }
         <DropdownMenuContent align="end">
           <DropdownMenuLabel>Ações</DropdownMenuLabel>
           <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger>
+            <DialogTrigger asChild>
               <DropdownMenuItem
                 onSelect={(event) => {
                   event.preventDefault()
                 }}
+                className='w-full'
               >
+                <Icons.edit size={15} className='pr-1' />
                 Editar
               </DropdownMenuItem>
             </DialogTrigger>
@@ -227,46 +231,33 @@ export function EditSongTableRow ({ song }: { song: { id: string, name: string }
           </Dialog>
 
           <DropdownMenuSeparator />
-          <AlertDialog>
-            <AlertDialogTrigger asChild className='w-full rounded-md bg-destructive text-destructive-foreground hover:bg-destructive-foreground/90' >
-              <DropdownMenuItem
-                className='w-full bg-destructive text-destructive-foreground hover:bg-destructive-foreground/90'
-                onSelect={(event) => {
-                  event.preventDefault()
-                }}
-                // asChild
-                id='test'
-                >
-                  {/* <Button size='sm'>Excluir</Button> */}
-                  Excluir
-                </DropdownMenuItem>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Deseja realmente excluir essa música?</AlertDialogTitle>
-                <AlertDialogDescription>
-                  Essa ação vai permanentemente remover a música <b>{song.name}</b> do banco de dados
-                  e não poderá ser desfeita
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel disabled={isDeleting} >Não deletar</AlertDialogCancel>
-                <AlertDialogAction asChild>
-                  <Button
-                    variant='destructive'
-                    onClick={async () => {
-                      setIsDeleting(true)
-                      await mutateAsync(song.id)
-                      await songsContext.invalidate()
-                    }}
-                    disabled={isDeleting}
-                    >
-                      Deletar
-                  </Button>
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
+          <DropdownMenuItem
+            className={`flex items-center ${showDeleteConfirmation ? 'bg-inherit focus:bg-inherit' : 'justify-start p-0 bg-destructive focus:bg-destructive/90 hover:bg-destructive/90'}`}
+            id='test'
+            >
+              { showDeleteConfirmation && <div className='flex flex-col gap-2'>
+                <Label>Tem certeza?</Label>
+                <div className='flex flex-row gap-1'>
+                  <Button size='sm' variant='outline' disabled={isDeleting} onClick={() => setShowDeleteConfirmation(false)} >Cancelar</Button>
+                  <Button size='sm' variant='destructive' onClick={async (e) => {
+                    e.preventDefault()
+                    setIsDeleting(true)
+                    await mutateAsync(song.id)
+                    await songsContext.invalidate()
+                    setShowDeleteConfirmation(false)
+                    setOpen(false)
+                  }}
+                    disabled={isDeleting}>Deletar</Button>
+                </div>
+              </div> }
+              { !showDeleteConfirmation && <Button variant='destructive' onClick={(e) => {
+                e.preventDefault()
+                setShowDeleteConfirmation(true)
+              }}>
+                <Icons.trash size={15} className='pr-1' />
+                Excluir
+              </Button> }
+            </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
   )
