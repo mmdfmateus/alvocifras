@@ -2,7 +2,7 @@ import { UserPlus, LogOut, Music, type User, Menu, ListMusic, UserSquare2, SunMe
 import { signOut } from 'next-auth/react'
 import { useTheme } from 'next-themes'
 import Link from 'next/link'
-import { useState } from 'react'
+import { type MouseEvent, useState } from 'react'
 
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar'
 import { Button } from '~/components/ui/button'
@@ -15,6 +15,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from '~/components/ui/dropdown-menu'
+import { Tabs, TabsList, TabsTrigger } from './ui/tabs'
 
 export interface User {
     id: string,
@@ -28,8 +29,13 @@ export interface UserNavProps {
 }
 
 export function UserNav ({ user }: UserNavProps) {
-  const { setTheme } = useTheme()
+  const { setTheme, theme } = useTheme()
   const [isOpen, setIsOpen] = useState(false)
+
+  const handleThemeSelection = (e: MouseEvent, themeSelected: string) => {
+    e.preventDefault()
+    setTheme(themeSelected)
+  }
 
   return (
     <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
@@ -58,17 +64,19 @@ export function UserNav ({ user }: UserNavProps) {
           </div>
         </DropdownMenuLabel>
         <DropdownMenuItem className='block sm:hidden focus:bg-inherit'>
-            <div className='flex gap-1 justify-around'>
-              <Button variant='secondary' onClick={() => setTheme('light')}>
+          <Tabs defaultValue={theme} className='flex-1'>
+            <TabsList className="grid grid-cols-3">
+              <TabsTrigger value='light' onClick={(e) => handleThemeSelection(e, 'light')}>
                 <SunMedium className="h-4 w-4" />
-              </Button>
-              <Button variant='secondary' onClick={() => setTheme('dark')}>
+              </TabsTrigger>
+              <TabsTrigger value='dark' onClick={(e) => handleThemeSelection(e, 'dark')}>
                 <Moon className="h-4 w-4" />
-              </Button>
-              <Button variant='secondary' onClick={() => setTheme('system')}>
+              </TabsTrigger>
+              <TabsTrigger value='system' onClick={(e) => handleThemeSelection(e, 'system')}>
                 <Laptop className="h-4 w-4" />
-              </Button>
-            </div>
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
           </DropdownMenuItem>
         <DropdownMenuSeparator className='block sm:hidden' />
         <DropdownMenuGroup className='block sm:hidden'>
