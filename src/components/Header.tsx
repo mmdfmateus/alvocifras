@@ -33,7 +33,6 @@ export const Header = () => {
                 }
                 { session.status === 'unauthenticated' &&
                     <>
-                        {/* <span className='w-3'></span> */}
                         <Button
                             onClick={() => signIn()}
                             >

@@ -2,6 +2,7 @@ import { UserPlus, LogOut, Music, type User, Menu, ListMusic, UserSquare2, SunMe
 import { signOut } from 'next-auth/react'
 import { useTheme } from 'next-themes'
 import Link from 'next/link'
+import { useState } from 'react'
 
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar'
 import { Button } from '~/components/ui/button'
@@ -28,10 +29,10 @@ export interface UserNavProps {
 
 export function UserNav ({ user }: UserNavProps) {
   const { setTheme } = useTheme()
-  // const [isOpen, setOpen] = useState(false)
+  const [isOpen, setIsOpen] = useState(false)
 
   return (
-    <DropdownMenu >
+    <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
       <DropdownMenuTrigger asChild>
         <Button variant={'ghost'} className="relative h-8 w-8 sm:rounded-full">
           <span>
@@ -75,6 +76,7 @@ export function UserNav ({ user }: UserNavProps) {
             <Link
               href={'/songs'}
               className='flex items-center'
+              onClick={() => setIsOpen(false)}
             >
               <ListMusic className="mr-2 h-4 w-4" />
               <span>Todas as músicas</span>
@@ -84,6 +86,7 @@ export function UserNav ({ user }: UserNavProps) {
             <Link
               href={'/artists'}
               className='flex items-center'
+              onClick={() => setIsOpen(false)}
             >
               <UserSquare2 className="mr-2 h-4 w-4" />
               <span>Todos os artistas</span>
@@ -96,6 +99,7 @@ export function UserNav ({ user }: UserNavProps) {
             <Link
               href={'/admin/songs'}
               className='flex items-center'
+              onClick={() => setIsOpen(false)}
             >
               <Music className="mr-2 h-4 w-4" />
               <span>Cadastrar música</span>
@@ -105,6 +109,7 @@ export function UserNav ({ user }: UserNavProps) {
             <Link
               href={'/admin/artists'}
               className='flex items-center'
+              onClick={() => setIsOpen(false)}
             >
               <UserPlus className="mr-2 h-4 w-4" />
               <span>Cadastrar artista</span>
@@ -113,7 +118,10 @@ export function UserNav ({ user }: UserNavProps) {
 
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem className='cursor-pointer hover:bg-primary-foreground' onClick={() => signOut()}>
+        <DropdownMenuItem
+          className='cursor-pointer hover:bg-primary-foreground'
+          onClick={() => signOut()}
+          >
           <LogOut className="mr-2 h-4 w-4" />
           <span>Log out</span>
         </DropdownMenuItem>

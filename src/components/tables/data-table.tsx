@@ -201,7 +201,7 @@ export function EditSongTableRow ({ song }: { song: { id: string, name: string }
 
   return (
       <DropdownMenu>
-        <DropdownMenuTrigger>
+        <DropdownMenuTrigger asChild>
           <Button disabled={isDeleting} variant="ghost" className="h-8 w-8 p-0">
             <span className="sr-only">Abrir menu</span>
             { isDeleting && <Spinner variant='small'/> }
