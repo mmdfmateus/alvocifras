@@ -3,11 +3,12 @@ import Head from 'next/head'
 import Image from 'next/image'
 
 import { api } from '~/utils/api'
-import { ChordSheetSerializer, HtmlDivFormatter, Song } from 'chordsheetjs'
+import { ChordLyricsPair, ChordSheetSerializer, HtmlDivFormatter, Song } from 'chordsheetjs'
 import { appRouter } from '~/server/api/root'
 import { prisma } from '~/server/db'
 import superjson from 'superjson'
 import { createServerSideHelpers } from '@trpc/react-query/server'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '~/components/ui/tabs'
 
 const serializer = new ChordSheetSerializer()
 const formatter = new HtmlDivFormatter()
@@ -60,6 +61,17 @@ const Songs: NextPage = (props: InferGetStaticPropsType<typeof getStaticProps>) 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
   const songParsed = isLoadingSong ? new Song() : serializer.deserialize(JSON.parse(song?.chords?.toString() ?? ''))
 
+  const lyrics =
+    songParsed.lines.map((line) => (
+      line.items.map((item) => {
+        if (item instanceof ChordLyricsPair) {
+          return item.lyrics
+        }
+
+        return ''
+      }).join('')
+    ))
+
   return (
     <>
       <Head>
@@ -68,9 +80,8 @@ const Songs: NextPage = (props: InferGetStaticPropsType<typeof getStaticProps>) 
         <link rel="icon" href="/favicon.ico" />
       </Head>
         <main className="flex w-screen flex-col items-center">
-          { isLoadingSong && <h2>Carregando...</h2> }
           {!isLoadingSong && song &&
-            <div className="container max-w-screen-lg flex flex-col gap-12 px-8 py-16">
+            <div className="container max-w-screen-lg flex flex-col gap-10 px-8 py-16">
                 <div className='flex gap-4 items-center'>
                   <Image
                     src={song.artist.imageUrl}
@@ -84,9 +95,22 @@ const Songs: NextPage = (props: InferGetStaticPropsType<typeof getStaticProps>) 
                     <h3 className='text-xl text-muted-foreground'>{song.artist.name}</h3>
                   </div>
                 </div>
-                <div
-                  className='mt-3 ml-2'
-                  dangerouslySetInnerHTML={{ __html: formatter.format(songParsed) }} />
+                <Tabs defaultValue='chords'>
+                  <TabsList className='ml-6 py-6 px-2'>
+                    <TabsTrigger value='chords' className='py-2 px-5'>Cifra</TabsTrigger>
+                    <TabsTrigger value='lyrics' className='py-2 px-5'>Letra</TabsTrigger>
+                  </TabsList>
+                  <TabsContent value='chords'>
+                    <div
+                      className='mt-8 ml-2'
+                      dangerouslySetInnerHTML={{ __html: formatter.format(songParsed) }} />
+                  </TabsContent>
+                  <TabsContent value='lyrics'>
+                    <div
+                      className='mt-8 ml-2'
+                      dangerouslySetInnerHTML={{ __html: lyrics.join('<br>') }} />
+                  </TabsContent>
+                </Tabs>
             </div>
           }
         </main>
