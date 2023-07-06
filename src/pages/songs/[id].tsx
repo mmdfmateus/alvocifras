@@ -3,14 +3,14 @@ import Head from 'next/head'
 import Image from 'next/image'
 
 import { api } from '~/utils/api'
-import { ChordSheetSerializer, HtmlTableFormatter, Song } from 'chordsheetjs'
+import { ChordSheetSerializer, HtmlDivFormatter, Song } from 'chordsheetjs'
 import { appRouter } from '~/server/api/root'
 import { prisma } from '~/server/db'
 import superjson from 'superjson'
 import { createServerSideHelpers } from '@trpc/react-query/server'
 
 const serializer = new ChordSheetSerializer()
-const formatter = new HtmlTableFormatter()
+const formatter = new HtmlDivFormatter()
 
 export const getStaticPaths: GetStaticPaths = async () => {
   const songs = await prisma.song.findMany({

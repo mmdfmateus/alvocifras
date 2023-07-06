@@ -2,15 +2,21 @@
   color: var(--primary);
   cursor: default;
   font-weight: 700;
-  padding-top: 0.75rem;
+  padding-top: 0.5rem;
 }
 
 .chord-sheet .chord:not(:last-child) {
-  padding-right: 10px;
+  padding-right: 1px;
 }
 
-.chord-sheet .paragraph {
-  margin-bottom: 1em;
+.chord-sheet .column:has(> div:empty) {
+  .chord {
+    margin-left: 20px;
+  }
+}
+
+.chord-sheet .paragraph:not(:last-child) {
+  margin-bottom: 2rem;
 }
 
 .chord-sheet .row {
