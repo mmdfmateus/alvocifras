@@ -40,7 +40,7 @@ const Songs: NextPage = () => {
                             <span className='text-md font-semibold'>Cadastrar música</span>
                         </Button>
                     </DialogTrigger>
-                    <DialogContent className="container md:max-w-screen-lg">
+                    <DialogContent className="container md:max-w-screen-lg max-h-screen overflow-y-auto overflow-x-scroll">
                         <DialogHeader>
                             <DialogTitle>Cadastrar música</DialogTitle>
                         </DialogHeader>

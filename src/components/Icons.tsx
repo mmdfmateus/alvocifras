@@ -51,6 +51,7 @@ import {
   type Icon as LucideIcon,
   type LucideProps,
   Laptop,
+  Play,
 } from 'lucide-react'
 
 export type Icon = LucideIcon
@@ -106,6 +107,7 @@ export const Icons = {
   shoes: Footprints,
   accessories: HardHat,
   laptop: Laptop,
+  play: Play,
   logo: (props: LucideProps) => (
       <svg
         xmlns="http://www.w3.org/2000/svg"

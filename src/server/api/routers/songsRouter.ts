@@ -32,6 +32,7 @@ export const songsRouter = createTRPCRouter({
             : true,
           createdAt: true,
           updatedAt: true,
+          videoId: true,
         },
         orderBy: [
           {
@@ -72,6 +73,7 @@ export const songsRouter = createTRPCRouter({
         name: z.string(),
         artistId: z.string().uuid(),
         chords: z.string(),
+        videoId: z.string().optional(),
       })
     )
     .mutation(async ({ input, ctx }) => {
@@ -81,6 +83,7 @@ export const songsRouter = createTRPCRouter({
           artistId: input.artistId,
           chords: input.chords,
           lyrics: input.chords,
+          videoId: input.videoId,
         },
       })
 
@@ -94,6 +97,7 @@ export const songsRouter = createTRPCRouter({
         name: z.string(),
         artistId: z.string().uuid(),
         chords: z.string(),
+        videoId: z.string().optional(),
       })
     )
     .mutation(async ({ input, ctx }) => {
@@ -106,6 +110,7 @@ export const songsRouter = createTRPCRouter({
           artistId: input.artistId,
           chords: input.chords,
           lyrics: input.chords,
+          videoId: input.videoId,
         },
       })
 

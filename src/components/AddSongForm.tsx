@@ -38,6 +38,12 @@ const tableFormatter = new HtmlTableFormatter()
 const textFormatter = new TextFormatter()
 const serializer = new ChordSheetSerializer()
 
+export const buildVideoUrl = (id: string, mode: 'embed' | 'link' = 'link') =>
+`https://youtube.com${mode === 'link' ? '/watch?v=' + id : '/embed/' + id}`
+
+export const getVideoIdFromUrl = (url: string) =>
+  url.split('v=')[1]
+
 const AddSongForm = ({ setOpen, existingForm }: AddSongFormProps) => {
   const [songFinishedParsing, setSongFinishedParsing] = useState(false)
   const { data: artists, isLoading: isLoadingArtists } = api.artists.getAll.useQuery()
@@ -80,7 +86,10 @@ const AddSongForm = ({ setOpen, existingForm }: AddSongFormProps) => {
   const formSchema = z.object({
     name: z.string().min(4, 'Nome precisa ter mais de 4 caracteres').max(50, 'Nome não pode ter mais de 50 caracteres'),
     artistId: z.string({ required_error: 'Escolha um artista' }).nonempty('Escolha um artista'),
-    chords: z.string().refine((data) => !isError, { message: 'Cifra inválida' }),
+    chords: z.string().refine(() => !isError, { message: 'Cifra inválida' }),
+    videoUrl: z.string().url()
+      .refine((url) => url?.length === 0 || url?.match(/(https:\/\/youtu\.be\/)|(https:\/\/www\.youtube\.com\/watch)/), 'O link precisa ser do youtube')
+      .optional()
   })
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -89,6 +98,7 @@ const AddSongForm = ({ setOpen, existingForm }: AddSongFormProps) => {
       name: songData?.name ?? '',
       artistId: songData?.artistId ?? '',
       chords: songData?.chords?.toString() ?? '',
+      videoUrl: songData?.videoId ? buildVideoUrl(songData.videoId) : '',
     }
   })
 
@@ -98,9 +108,16 @@ const AddSongForm = ({ setOpen, existingForm }: AddSongFormProps) => {
       return
     }
 
+    const { videoUrl, ...otherValues } = values
+
+    const body = {
+      videoId: videoUrl ? getVideoIdFromUrl(videoUrl) : '',
+      ...otherValues
+    }
+
     const action = existingForm
-      ? editAsync({ ...values, id: existingForm.id, chords: JSON.stringify(serializer.serialize(song!)) })
-      : createAsync({ ...values, chords: JSON.stringify(serializer.serialize(song!)) })
+      ? editAsync({ ...body, id: existingForm.id, chords: JSON.stringify(serializer.serialize(song!)) })
+      : createAsync({ ...body, chords: JSON.stringify(serializer.serialize(song!)) })
 
     await action
     form.reset()
@@ -176,6 +193,23 @@ const AddSongForm = ({ setOpen, existingForm }: AddSongFormProps) => {
             />
             <FormField
                 control={form.control}
+                name="videoUrl"
+                render={({ field }) => (
+                    <FormItem className='col-span-2'>
+                        <FormLabel>Link do vídeo</FormLabel>
+                        <FormControl>
+                            <Input
+                              disabled={isCreating || isEditing}
+                              placeholder="Cole aqui o link do vídeo do YouTube"
+                              {...field}
+                            />
+                        </FormControl>
+                        <FormMessage />
+                    </FormItem>
+                )}
+            />
+            <FormField
+                control={form.control}
                 name="chords"
                 render={({ field }) => (
                     <FormItem>
@@ -198,11 +232,11 @@ const AddSongForm = ({ setOpen, existingForm }: AddSongFormProps) => {
             <div className='h-full'>
                 <Label className='text-muted-foreground'>Preview</Label>
                 <ChordsPreview
-                placeholder='Veja aqui como ficará a cifra e faça os ajustes que desejar'
-                label='Preview'
-                description='A cifra será salva da maneira que está sendo exibida acima, faça os ajustes necessários'
-                songAsHtml={songFormatted}
-                isError={isError}
+                  placeholder='Veja aqui como ficará a cifra e faça os ajustes que desejar'
+                  label='Preview'
+                  description='A cifra será salva da maneira que está sendo exibida acima, faça os ajustes necessários'
+                  songAsHtml={songFormatted}
+                  isError={isError}
                 />
             </div>
             <Button className='col-span-2' isLoading={isCreating} size={'lg'}>Submit</Button>

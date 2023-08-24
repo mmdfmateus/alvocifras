@@ -71,6 +71,7 @@ model Song {
     artist    Artist            @relation(name: "ArtistSongs", fields: [artistId], references: [id])
     artistId  String
     playlists SongsOnPlaylist[]
+    videoId   String?
     createdAt DateTime          @default(now())
     updatedAt DateTime          @updatedAt
 
