@@ -12,37 +12,26 @@ export const Header = () => {
 
   return (
     <header className='sticky'>
-        <section className="sticky container max-w-screen-lg top-0 flex gap-3 h-16 items-center px-4">
-            <Link
-                href={'/'}
-                >
-                <Image
-                    src={'/logo.png'}
-                    alt='logo'
-                    width={40}
-                    height={40}
-                    />
-            </Link>
-            <SearchInput wrapperclassName="block sm:hidden"/>
-            <MainNav className="mx-6 hidden sm:block" />
-            <div className="flex gap-2 ml-auto items-center sm:space-x-4">
-                <SearchInput wrapperclassName="hidden sm:block"/>
-                <ThemeToggle />
-                { session.status === 'authenticated' &&
-                    <UserNav user={session.data.user as User} />
-                }
-                { session.status === 'unauthenticated' &&
-                    <>
-                        <Button
-                            onClick={() => signIn()}
-                            >
-                            Entrar
-                        </Button>
-                    </>
-                }
-            </div>
-        </section>
-        <div className='w-full border-b z-40 bg-red-500'></div>
+      <section className='container sticky top-0 flex h-16 max-w-screen-lg items-center gap-3 px-4'>
+        <Link href={'/'}>
+          <Image src={'/logo.png'} alt='logo' width={100} height={100} />
+        </Link>
+        <SearchInput wrapperclassName='block sm:hidden' />
+        <MainNav className='mx-6 hidden sm:block' />
+        <div className='ml-auto flex items-center gap-2 sm:space-x-4'>
+          <SearchInput wrapperclassName='hidden sm:block' />
+          <ThemeToggle />
+          {session.status === 'authenticated' && (
+            <UserNav user={session.data.user as User} />
+          )}
+          {session.status === 'unauthenticated' && (
+            <>
+              <Button onClick={() => signIn()}>Entrar</Button>
+            </>
+          )}
+        </div>
+      </section>
+      <div className='z-40 w-full border-b bg-red-500'></div>
     </header>
   )
 }
