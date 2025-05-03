@@ -9,25 +9,37 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormMessage
+  FormMessage,
 } from '@/components/ui/form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { type Dispatch, type SetStateAction, useState, useTransition, useEffect } from 'react'
+import {
+  type Dispatch,
+  type SetStateAction,
+  useState,
+  useTransition,
+  useEffect,
+} from 'react'
 import { api } from '~/utils/api'
-import { generateReactHelpers } from '@uploadthing/react/hooks'
+import { generateReactHelpers } from '@uploadthing/react'
 
-import type { CustomFileRouter } from '~/server/uploadthing'
+import type { OurFileRouter } from '~/server/uploadthing'
 import { FileDialog, type FileWithPreview } from './FileDialog'
 import toast from 'react-hot-toast'
 
-function isFileAlreadyUploaded (image?: unknown) {
+function isFileAlreadyUploaded(image?: unknown) {
   return (image as File[])[0]?.size === 0
 }
 
-function getFileFromExistingForm (existingForm: { id: string } & { name: string; image?: unknown }) {
-  const file = new File([], (existingForm?.image as string).split('/f/')[1] ?? 'imagem', {
-    type: 'image',
-  })
+function getFileFromExistingForm(
+  existingForm: { id: string } & { name: string; image?: unknown }
+) {
+  const file = new File(
+    [],
+    (existingForm?.image as string).split('/f/')[1] ?? 'imagem',
+    {
+      type: 'image',
+    }
+  )
   const fileWithPreview = Object.assign(file, {
     preview: existingForm?.image as string,
   })
@@ -36,7 +48,8 @@ function getFileFromExistingForm (existingForm: { id: string } & { name: string;
 
 const formSchema = z.object({
   name: z.string().min(4).max(50),
-  image: z.custom()
+  image: z
+    .custom()
     .refine((val) => {
       if (!Array.isArray(val)) return false
       if (val.some((file) => !(file instanceof File))) return false
@@ -46,11 +59,11 @@ const formSchema = z.object({
     .default(null),
 })
 
-const { useUploadThing } = generateReactHelpers<CustomFileRouter>()
+const { useUploadThing } = generateReactHelpers<OurFileRouter>()
 
 export interface AddArtistFormProps {
-  setOpen: Dispatch<SetStateAction<boolean>>,
-  existingForm?: { id: string} & z.infer<typeof formSchema>
+  setOpen: Dispatch<SetStateAction<boolean>>
+  existingForm?: { id: string } & z.infer<typeof formSchema>
 }
 
 const AddArtistForm = ({ setOpen, existingForm }: AddArtistFormProps) => {
@@ -72,48 +85,54 @@ const AddArtistForm = ({ setOpen, existingForm }: AddArtistFormProps) => {
     defaultValues: {
       name: existingForm?.name ?? '',
       image: existingForm?.image ? [getFileFromExistingForm(existingForm)] : [],
-    }
+    },
   })
 
   // uploadthing
-  const { isUploading, startUpload } = useUploadThing({
-    endpoint: 'imageUploader'
-  })
+  const { isUploading, startUpload } = useUploadThing('imageUploader')
 
   const { artists: artistsContext } = api.useContext()
-  const { mutateAsync: createAsync, isLoading: isCreating } = api.artists.create.useMutation({
-    onSuccess (data, variables, context) {
-      form.reset()
-      // setImageUploaded(false)
-    }
-  })
-  const { mutateAsync: editAsync, isLoading: isEditing } = api.artists.edit.useMutation({
-    onSuccess (data, variables, context) {
-      form.reset()
-      // setImageUploaded(false)
-    }
-  })
+  const { mutateAsync: createAsync, isLoading: isCreating } =
+    api.artists.create.useMutation({
+      onSuccess(data, variables, context) {
+        form.reset()
+        // setImageUploaded(false)
+      },
+    })
+  const { mutateAsync: editAsync, isLoading: isEditing } =
+    api.artists.edit.useMutation({
+      onSuccess(data, variables, context) {
+        form.reset()
+        // setImageUploaded(false)
+      },
+    })
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     startTransition(async () => {
       try {
         // Upload images if data.images is an array of files
-        const image = isFileAlreadyUploaded(values.image)
+        const isFileDone = isFileAlreadyUploaded(values.image)
+        const image = isFileDone
           ? (values.image as FileWithPreview[])[0]?.preview
           : await toast
-            .promise(startUpload(values.image as File[]), {
-              loading: 'Salvando imagem',
-              success: 'Imagem salva com sucesso',
-              error: 'Algum erro ocorreu ao salvar a imagem',
-            })
-            .then((res) => {
-              const formattedImages = res?.map((image) => image.fileUrl) ?? []
+              .promise(startUpload(values.image as File[]), {
+                loading: 'Salvando imagem',
+                success: 'Imagem salva com sucesso',
+                error: 'Algum erro ocorreu ao salvar a imagem',
+              })
+              .then((res) => {
+                console.log({ res })
+                const formattedImages = res?.map((image) => image.ufsUrl) ?? []
 
-              return formattedImages[0] ?? null
-            })
+                return (formattedImages[0] as string) ?? null
+              })
 
         const action = existingForm
-          ? editAsync({ id: existingForm.id, name: values.name, imageUrl: image! })
+          ? editAsync({
+              id: existingForm.id,
+              name: values.name,
+              imageUrl: image!,
+            })
           : createAsync({ name: values.name, imageUrl: image! })
         await action
         setOpen(false)
@@ -136,49 +155,59 @@ const AddArtistForm = ({ setOpen, existingForm }: AddArtistFormProps) => {
 
   return (
     <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className='flex flex-col gap-7'>
-            <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                    <FormItem>
-                        <FormLabel>Nome</FormLabel>
-                        <FormControl>
-                            <Input
-                                disabled={isCreating || isEditing}
-                                placeholder="Sujeito a Reboque"
-                                {...field} />
-                        </FormControl>
-                        <FormMessage />
-                    </FormItem>
-                )}
-            />
-            <FormField
-                control={form.control}
-                name="image"
-                render={({ field }) => (
-                    <FormItem>
-                        <FormLabel>Imagem</FormLabel>
-                        <FormControl>
-                          <div className='flex items-center justify-center'>
-                            <FileDialog
-                              setValue={form.setValue}
-                              name='image'
-                              maxFiles={1}
-                              maxSize={1024 * 1024 * 4}
-                              files={files}
-                              setFiles={setFiles}
-                              isUploading={isUploading}
-                              disabled={isPending}
-                            />
-                          </div>
-                        </FormControl>
-                        <FormMessage />
-                    </FormItem>
-                )}
-            />
-            <Button isLoading={isCreating || isEditing} className='col-span-2' size={'lg'}>Salvar</Button>
-        </form>
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className='flex flex-col gap-7'
+      >
+        <FormField
+          control={form.control}
+          name='name'
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Nome</FormLabel>
+              <FormControl>
+                <Input
+                  disabled={isCreating || isEditing}
+                  placeholder='Sujeito a Reboque'
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name='image'
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Imagem</FormLabel>
+              <FormControl>
+                <div className='flex items-center justify-center'>
+                  <FileDialog
+                    setValue={form.setValue}
+                    name='image'
+                    maxFiles={1}
+                    maxSize={1024 * 1024 * 4}
+                    files={files}
+                    setFiles={setFiles}
+                    isUploading={isUploading}
+                    disabled={isPending}
+                  />
+                </div>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <Button
+          isLoading={isCreating || isEditing}
+          className='col-span-2'
+          size={'lg'}
+        >
+          Salvar
+        </Button>
+      </form>
     </Form>
   )
 }

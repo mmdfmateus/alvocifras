@@ -16,6 +16,8 @@ const config = {
       rules: {
         "comma-dangle": ["error", "only-multiline",],
         "no-void": ["error", { "allowAsStatement": true, },],
+        "space-before-function-paren": ["off", "never",],
+        "indent": ["off", 2,],
       },
     },
   ],

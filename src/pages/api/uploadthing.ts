@@ -1,9 +1,10 @@
-import { createNextPageApiHandler } from 'uploadthing/next-legacy'
+import { createRouteHandler } from 'uploadthing/next-legacy'
 
-import { customFileRouter } from '~/server/uploadthing'
+import { ourFileRouter } from '~/server/uploadthing'
 
-const handler = createNextPageApiHandler({
-  router: customFileRouter,
+export default createRouteHandler({
+  router: ourFileRouter,
+
+  // Apply an (optional) custom config:
+  // config: { ... },
 })
-
-export default handler
