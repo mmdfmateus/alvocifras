@@ -17,16 +17,5 @@ const config = {
       },
     ],
   },
-  experimental: {
-    esmExternals: false,
-    swcPlugins: [
-      [
-        'next-superjson-plugin',
-        {
-          excluded: [],
-        },
-      ],
-    ],
-  },
 };
 export default config;
