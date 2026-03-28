@@ -49,16 +49,7 @@ const AddSongForm = ({ setOpen, existingForm }: AddSongFormProps) => {
   const { data: artists, isLoading: isLoadingArtists } = api.artists.getAll.useQuery()
   const { data: songData, status } = api.songs.getById.useQuery(existingForm?.id ?? '',
     {
-      enabled: !!existingForm,
-      onSuccess: function ({ chords }) {
-        const songParsed = status === 'success'
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-          ? serializer.deserialize(JSON.parse(chords?.toString() ?? ''))
-          : new Song()
-        setSongFormatted(tableFormatter.format(songParsed))
-        setContent(textFormatter.format(songParsed))
-        setSongFinishedParsing(true)
-      }
+      enabled: !!existingForm
     })
 
   const { songs: songsContext } = api.useContext()
@@ -67,7 +58,7 @@ const AddSongForm = ({ setOpen, existingForm }: AddSongFormProps) => {
   const [content, setContent] = useState<string>('')
   const [isError, setIsError] = useState<boolean>(false)
 
-  const { mutateAsync: createAsync, isLoading: isCreating } = api.songs.create.useMutation({
+  const { mutateAsync: createAsync, isPending: isCreating } = api.songs.create.useMutation({
     onSuccess (data, variables, context) {
       form.reset()
       void songsContext.invalidate()
@@ -75,7 +66,7 @@ const AddSongForm = ({ setOpen, existingForm }: AddSongFormProps) => {
     }
   })
 
-  const { mutateAsync: editAsync, isLoading: isEditing } = api.songs.edit.useMutation({
+  const { mutateAsync: editAsync, isPending: isEditing } = api.songs.edit.useMutation({
     onSuccess (data, variables, context) {
       form.reset()
       void songsContext.invalidate()
@@ -115,9 +106,15 @@ const AddSongForm = ({ setOpen, existingForm }: AddSongFormProps) => {
       ...otherValues
     }
 
+    if (!song) {
+      form.setError('chords', { message: 'Digite uma cifra válida' })
+      return
+    }
+
+    const serializedChords = JSON.stringify(serializer.serialize(song))
     const action = existingForm
-      ? editAsync({ ...body, id: existingForm.id, chords: JSON.stringify(serializer.serialize(song!)) })
-      : createAsync({ ...body, chords: JSON.stringify(serializer.serialize(song!)) })
+      ? editAsync({ ...body, id: existingForm.id, chords: serializedChords })
+      : createAsync({ ...body, chords: serializedChords })
 
     await action
     form.reset()
@@ -145,9 +142,27 @@ const AddSongForm = ({ setOpen, existingForm }: AddSongFormProps) => {
     validateChords(content)
   }, [content, isError])
 
+  useEffect(() => {
+    if (status !== 'success' || !songData) {
+      return
+    }
+
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+      const songParsed = serializer.deserialize(
+        JSON.parse(songData.chords?.toString() ?? '')
+      )
+      setSongFormatted(tableFormatter.format(songParsed))
+      setContent(textFormatter.format(songParsed))
+      setSongFinishedParsing(true)
+    } catch {
+      setSongFinishedParsing(true)
+    }
+  }, [songData, status])
+
   return (
     <Form {...form}>
-        { existingForm && status === 'loading' && <div className='w-full h-full flex justify-center items-center'><Spinner /></div> }
+        { existingForm && status === 'pending' && <div className='w-full h-full flex justify-center items-center'><Spinner /></div> }
         { (!existingForm || status === 'success') && <form onSubmit={form.handleSubmit(onSubmit)} className='grid grid-cols-2 gap-6'>
             <FormField
                 control={form.control}

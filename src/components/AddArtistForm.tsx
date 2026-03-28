@@ -67,6 +67,10 @@ export interface AddArtistFormProps {
 }
 
 const AddArtistForm = ({ setOpen, existingForm }: AddArtistFormProps) => {
+  // const [imageUploaded, setImageUploaded] = useState(false)
+  const [files, setFiles] = useState<FileWithPreview[] | null>(null)
+  const [isPending, startTransition] = useTransition()
+
   useEffect(() => {
     if (existingForm?.image) {
       const fileWithPreview = getFileFromExistingForm(existingForm)
@@ -74,10 +78,6 @@ const AddArtistForm = ({ setOpen, existingForm }: AddArtistFormProps) => {
       setFiles([fileWithPreview])
     }
   }, [existingForm?.image])
-
-  // const [imageUploaded, setImageUploaded] = useState(false)
-  const [files, setFiles] = useState<FileWithPreview[] | null>(null)
-  const [isPending, startTransition] = useTransition()
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -92,14 +92,14 @@ const AddArtistForm = ({ setOpen, existingForm }: AddArtistFormProps) => {
   const { isUploading, startUpload } = useUploadThing('imageUploader')
 
   const { artists: artistsContext } = api.useContext()
-  const { mutateAsync: createAsync, isLoading: isCreating } =
+  const { mutateAsync: createAsync, isPending: isCreating } =
     api.artists.create.useMutation({
       onSuccess(data, variables, context) {
         form.reset()
         // setImageUploaded(false)
       },
     })
-  const { mutateAsync: editAsync, isLoading: isEditing } =
+  const { mutateAsync: editAsync, isPending: isEditing } =
     api.artists.edit.useMutation({
       onSuccess(data, variables, context) {
         form.reset()

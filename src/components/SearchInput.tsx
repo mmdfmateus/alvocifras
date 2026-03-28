@@ -20,8 +20,8 @@ export const SearchInput = (props: InputProps) => {
   const [searchTerm] = useDebouncedValue(valueTyped, 200)
   const [isOpen, setIsOpen] = useState(false)
   const searchInputRef = useRef<HTMLInputElement>(null)
-  const { data, isLoading, isFetched } = api.search.searchByName.useQuery({ searchTerm }, {
-    queryKey: ['search.searchByName', { searchTerm }]
+  const { data, isLoading, isFetched } = api.search.searchByName.useQuery({
+    searchTerm
   })
 
   useEffect(() => {
