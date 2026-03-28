@@ -1,6 +1,4 @@
-// import type { NextApiRequest, NextApiResponse } from 'next'
-
-import { createUploadthing, type FileRouter } from 'uploadthing/next-legacy'
+import { createUploadthing, type FileRouter } from 'uploadthing/next'
 // import { UploadThingError } from 'uploadthing/server'
 
 const f = createUploadthing()
@@ -21,7 +19,7 @@ export const ourFileRouter = {
     },
   })
     // Set permissions and file types for this FileRoute
-    .middleware(({ req, res }) => {
+    .middleware(() => {
       // This code runs on your server before upload
       // const user = await auth(req, res)
 
