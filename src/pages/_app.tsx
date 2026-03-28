@@ -2,8 +2,6 @@ import { type AppType } from 'next/app'
 import { type Session } from 'next-auth'
 import { AppProviders } from '~/components/AppProviders'
 
-import { api } from '~/utils/api'
-
 import '~/styles/globals.css'
 import '~/styles/chordsStyles.css'
 import '@uploadthing/react/styles.css'
@@ -19,4 +17,4 @@ const MyApp: AppType<{ session: Session | null }> = ({
   )
 }
 
-export default api.withTRPC(MyApp)
+export default MyApp

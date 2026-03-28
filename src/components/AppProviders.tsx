@@ -8,6 +8,7 @@ import { Toaster } from 'react-hot-toast'
 import { Analytics } from '@vercel/analytics/react'
 
 import { Header } from '~/components/Header'
+import { TRPCReactProvider } from '~/components/TRPCReactProvider'
 
 type AppProvidersProps = PropsWithChildren<{
   session: Session | null;
@@ -15,13 +16,15 @@ type AppProvidersProps = PropsWithChildren<{
 
 export const AppProviders = ({ children, session }: AppProvidersProps) => {
   return (
-    <SessionProvider session={session}>
-      <ThemeProvider attribute='class' defaultTheme='system' enableSystem>
-        <Toaster />
-        <Analytics />
-        <Header />
-        {children}
-      </ThemeProvider>
-    </SessionProvider>
+    <TRPCReactProvider>
+      <SessionProvider session={session}>
+        <ThemeProvider attribute='class' defaultTheme='system' enableSystem>
+          <Toaster />
+          <Analytics />
+          <Header />
+          {children}
+        </ThemeProvider>
+      </SessionProvider>
+    </TRPCReactProvider>
   )
 }
