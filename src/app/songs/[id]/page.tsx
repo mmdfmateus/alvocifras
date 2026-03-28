@@ -20,6 +20,7 @@ type SongPageProps = {
 const serializer = new ChordSheetSerializer()
 const formatter = new HtmlDivFormatter()
 const videoHeight = '315'
+type SerializedSongArg = Parameters<ChordSheetSerializer['deserialize']>[0]
 
 const parseSong = (chords?: unknown): Song => {
   if (typeof chords !== 'string') {
@@ -27,8 +28,7 @@ const parseSong = (chords?: unknown): Song => {
   }
 
   try {
-    const parsed = JSON.parse(chords) as unknown
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    const parsed = JSON.parse(chords) as SerializedSongArg
     return serializer.deserialize(parsed)
   } catch {
     return new Song()
