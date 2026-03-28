@@ -1,13 +1,25 @@
 'use client'
 
 import { type PropsWithChildren, useState } from 'react'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import {
+  type DehydratedState,
+  Hydrate,
+  QueryClient,
+  QueryClientProvider
+} from '@tanstack/react-query'
 import { loggerLink, httpBatchLink } from '@trpc/client'
 import superjson from 'superjson'
 
 import { api, getBaseUrl } from '~/utils/api'
 
-export const TRPCReactProvider = ({ children }: PropsWithChildren) => {
+type TRPCReactProviderProps = PropsWithChildren<{
+  trpcState?: DehydratedState;
+}>
+
+export const TRPCReactProvider = ({
+  children,
+  trpcState
+}: TRPCReactProviderProps) => {
   const [queryClient] = useState(() => new QueryClient())
   const [trpcClient] = useState(() =>
     api.createClient({
@@ -25,9 +37,13 @@ export const TRPCReactProvider = ({ children }: PropsWithChildren) => {
     })
   )
 
+  const hydratedState = api.useDehydratedState(trpcClient, trpcState)
+
   return (
     <api.Provider client={trpcClient} queryClient={queryClient}>
-      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+      <QueryClientProvider client={queryClient}>
+        <Hydrate state={hydratedState}>{children}</Hydrate>
+      </QueryClientProvider>
     </api.Provider>
   )
 }
