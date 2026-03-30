@@ -1,26 +1,36 @@
 'use client'
 
-import { type PropsWithChildren, useState } from 'react'
-import {
-  type DehydratedState,
-  HydrationBoundary,
-  QueryClient,
-  QueryClientProvider
-} from '@tanstack/react-query'
+import { type ComponentType, type PropsWithChildren, useState } from 'react'
+import * as ReactQuery from '@tanstack/react-query'
 import { loggerLink, httpBatchLink } from '@trpc/client'
 import superjson from 'superjson'
 
 import { api, getBaseUrl } from '~/utils/api'
 
 type TRPCReactProviderProps = PropsWithChildren<{
-  trpcState?: DehydratedState;
+  trpcState?: ReactQuery.DehydratedState;
 }>
+
+type HydrationProps = PropsWithChildren<{
+  state?: ReactQuery.DehydratedState;
+}>
+
+const HydrationBoundaryCompat = (
+  ReactQuery as unknown as {
+    HydrationBoundary?: ComponentType<HydrationProps>;
+    Hydrate?: ComponentType<HydrationProps>;
+  }
+).HydrationBoundary ?? (
+  ReactQuery as unknown as {
+    Hydrate?: ComponentType<HydrationProps>;
+  }
+).Hydrate
 
 export const TRPCReactProvider = ({
   children,
   trpcState
 }: TRPCReactProviderProps) => {
-  const [queryClient] = useState(() => new QueryClient())
+  const [queryClient] = useState(() => new ReactQuery.QueryClient())
   const [trpcClient] = useState(() =>
     api.createClient({
       links: [
@@ -38,10 +48,12 @@ export const TRPCReactProvider = ({
   )
 
   return (
-    <QueryClientProvider client={queryClient}>
+    <ReactQuery.QueryClientProvider client={queryClient}>
       <api.Provider client={trpcClient} queryClient={queryClient}>
-        <HydrationBoundary state={trpcState}>{children}</HydrationBoundary>
+        {HydrationBoundaryCompat
+          ? <HydrationBoundaryCompat state={trpcState}>{children}</HydrationBoundaryCompat>
+          : children}
       </api.Provider>
-    </QueryClientProvider>
+    </ReactQuery.QueryClientProvider>
   )
 }
