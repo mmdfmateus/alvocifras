@@ -19,21 +19,23 @@ type CardProps = React.ComponentProps<typeof Card> & {
 }
 
 export function HomeCard ({ className, ...props }: CardProps) {
+  const { title, buttonTitle, buttonRedirectTo, children, ...cardProps } = props
+
   return (
-    <Card className={cn('w-[380px]', className)} {...props}>
+    <Card className={cn('w-[380px]', className)} {...cardProps}>
       <CardHeader>
-        <CardTitle>{props.title}</CardTitle>
+        <CardTitle>{title}</CardTitle>
         <CardDescription>Procuras recentes</CardDescription>
       </CardHeader>
       <CardContent className="grid gap-4">
         <div>
-          {props.children}
+          {children}
         </div>
       </CardContent>
       <CardFooter>
-        <Link href={props.buttonRedirectTo} className="w-full" >
+        <Link href={buttonRedirectTo} className="w-full" >
           <Button className="w-full">
-            {props.buttonTitle}
+            {buttonTitle}
           </Button>
         </Link>
       </CardFooter>

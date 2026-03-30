@@ -16,12 +16,13 @@ export type InputProps = React.InputHTMLAttributes<HTMLInputElement> & {
 }
 
 export const SearchInput = (props: InputProps) => {
+  const { wrapperclassName, ...inputProps } = props
   const [valueTyped, setValueTyped] = useState('')
   const [searchTerm] = useDebouncedValue(valueTyped, 200)
   const [isOpen, setIsOpen] = useState(false)
   const searchInputRef = useRef<HTMLInputElement>(null)
-  const { data, isLoading, isFetched } = api.search.searchByName.useQuery({ searchTerm }, {
-    queryKey: ['search.searchByName', { searchTerm }]
+  const { data, isLoading, isFetched } = api.search.searchByName.useQuery({
+    searchTerm
   })
 
   useEffect(() => {
@@ -49,7 +50,7 @@ export const SearchInput = (props: InputProps) => {
 
   return (
     <div
-      className={cn('relative z-500 flex-grow p-1', props.wrapperclassName)}
+      className={cn('relative z-500 flex-grow p-1', wrapperclassName)}
       ref={searchInputRef}
       >
       <Input
@@ -59,7 +60,7 @@ export const SearchInput = (props: InputProps) => {
         value={valueTyped}
         onChange={handleChange}
         onFocus={() => setIsOpen(true)}
-        {...props}
+        {...inputProps}
         />
       { isOpen && (
         <Card className='absolute z-50 min-w-full bg-primary-foreground shadow-md p-3'>

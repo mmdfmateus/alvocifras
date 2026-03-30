@@ -14,7 +14,6 @@
  *
  * These allow you to access things when processing a request, like the database, the session, etc.
  */
-import { type CreateNextContextOptions } from '@trpc/server/adapters/next'
 import { type Session } from 'next-auth'
 
 import { getServerAuthSession } from '~/server/auth'
@@ -58,11 +57,9 @@ const createInnerTRPCContext = (opts: CreateContextOptions) => {
  *
  * @see https://trpc.io/docs/context
  */
-export const createTRPCContext = async (opts: CreateNextContextOptions) => {
-  const { req, res } = opts
-
-  // Get the session from the server using the getServerSession wrapper function
-  const session = await getServerAuthSession({ req, res })
+export const createTRPCContext = async () => {
+  // `getServerSession` can read request context directly in App Router route handlers.
+  const session = await getServerAuthSession()
 
   return createInnerTRPCContext({
     session
