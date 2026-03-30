@@ -1,6 +1,6 @@
 'use client'
 
-import type { JSX } from 'react'
+import { use, type JSX } from 'react'
 import Image from 'next/image'
 import { useMemo, useState } from 'react'
 import { Play, X } from 'lucide-react'
@@ -12,9 +12,9 @@ import { buildVideoUrl } from '~/components/AddSongForm'
 import { Button } from '~/components/ui/button'
 
 type SongPageProps = {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 const serializer = new ChordSheetSerializer()
@@ -36,7 +36,8 @@ const parseSong = (chords?: unknown): Song => {
 }
 
 export default function SongDetailPage ({ params }: SongPageProps): JSX.Element {
-  const { data: song, isLoading: isLoadingSong } = api.songs.getById.useQuery(params.id)
+  const { id } = use(params)
+  const { data: song, isLoading: isLoadingSong } = api.songs.getById.useQuery(id)
 
   const songParsed = isLoadingSong ? new Song() : parseSong(song?.chords)
 

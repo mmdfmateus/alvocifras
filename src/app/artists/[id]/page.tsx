@@ -1,6 +1,6 @@
 'use client'
 
-import type { JSX } from 'react'
+import { use, type JSX } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { Dot } from 'lucide-react'
@@ -9,13 +9,14 @@ import { api } from '~/utils/api'
 import { Separator } from '~/components/ui/separator'
 
 type ArtistPageProps = {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 export default function ArtistDetailPage ({ params }: ArtistPageProps): JSX.Element {
-  const { data: artist, isLoading: isLoadingArtist } = api.artists.getById.useQuery(params.id)
+  const { id } = use(params)
+  const { data: artist, isLoading: isLoadingArtist } = api.artists.getById.useQuery(id)
 
   let currentLetter = ''
   return (

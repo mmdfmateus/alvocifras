@@ -28,7 +28,7 @@ export default function AdminArtistsPage (): JSX.Element {
         <div className='flex flex-col items-center justify-between gap-4 sm:flex-row'>
           <h1 className='text-4xl'>Artistas</h1>
           <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger>
+            <DialogTrigger asChild>
               <Button>
                 <UserPlus className='mr-6 h-4 w-4' strokeWidth='2.5' />
                 <span className='text-md font-semibold'>Cadastrar artista</span>

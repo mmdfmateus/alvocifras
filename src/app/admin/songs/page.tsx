@@ -28,7 +28,7 @@ export default function AdminSongsPage (): JSX.Element {
         <div className='flex flex-col items-center justify-between gap-4 sm:flex-row'>
           <h1 className='text-4xl'>Músicas</h1>
           <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger id='trigger'>
+            <DialogTrigger asChild id='trigger'>
               <Button>
                 <Music className='mr-6 h-4 w-4' strokeWidth='2.5' />
                 <span className='text-md font-semibold'>Cadastrar música</span>

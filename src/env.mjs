@@ -5,24 +5,59 @@ import { z, } from "zod";
  * built with invalid env vars.
  */
 const server = z.object({
-  DATABASE_URL: z.string().url(),
+  SKIP_ENV_VALIDATION: z.string().optional(),
+  DATABASE_URL: z.preprocess(
+    (str) =>
+      str ??
+      (process.env.NODE_ENV === "production"
+        ? undefined
+        : "mysql://root:root@127.0.0.1:3306/alvocifras"),
+    z.string().url(),
+  ),
   NODE_ENV: z.enum(["development", "test", "production",]),
-  NEXTAUTH_SECRET:
-    process.env.NODE_ENV === "production"
-      ? z.string().min(1)
-      : z.string().min(1).optional(),
+  NEXTAUTH_SECRET: z.preprocess(
+    (str) =>
+      process.env.NODE_ENV === "production"
+        ? str
+        : (str ?? "development-nextauth-secret"),
+    z.string().min(1),
+  ),
   NEXTAUTH_URL: z.preprocess(
     // This makes Vercel deployments not fail if you don't set NEXTAUTH_URL
     // Since NextAuth.js automatically uses the VERCEL_URL if present.
-    (str) => process.env.VERCEL_URL ?? str,
+    (str) => process.env.VERCEL_URL ?? str ?? "http://localhost:3000",
     // VERCEL_URL doesn't include `https` so it cant be validated as a URL
     process.env.VERCEL ? z.string().min(1) : z.string().url(),
   ),
-  // Add `.min(1) on ID and SECRET if you want to make sure they're not empty
-  GOOGLE_CLIENT_ID: z.string().min(1),
-  GOOGLE_CLIENT_SECRET: z.string().min(1),
-  UPLOADTHING_SECRET: z.string().min(1),
-  UPLOADTHING_TOKEN: z.string().min(1),
+  GOOGLE_CLIENT_ID: z.preprocess(
+    (str) =>
+      process.env.NODE_ENV === "production"
+        ? str
+        : (str ?? "development-google-client-id"),
+    z.string().min(1),
+  ),
+  GOOGLE_CLIENT_SECRET: z.preprocess(
+    (str) =>
+      process.env.NODE_ENV === "production"
+        ? str
+        : (str ?? "development-google-client-secret"),
+    z.string().min(1),
+  ),
+  // UploadThing v7 uses token; keep secret optional for backward compatibility.
+  UPLOADTHING_SECRET: z.preprocess(
+    (str) =>
+      process.env.NODE_ENV === "production"
+        ? str
+        : (str ?? "development-uploadthing-secret"),
+    z.string().min(1),
+  ),
+  UPLOADTHING_TOKEN: z.preprocess(
+    (str) =>
+      process.env.NODE_ENV === "production"
+        ? str
+        : (str ?? "development-uploadthing-token"),
+    z.string().min(1),
+  ),
 });
 
 /**
@@ -46,12 +81,37 @@ const client = z.object(
 const processEnv = {
   DATABASE_URL: process.env.DATABASE_URL,
   NODE_ENV: process.env.NODE_ENV,
-  NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
-  NEXTAUTH_URL: process.env.NEXTAUTH_URL,
-  GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
-  GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
-  UPLOADTHING_SECRET: process.env.UPLOADTHING_SECRET,
-  UPLOADTHING_TOKEN: process.env.UPLOADTHING_TOKEN,
+  NEXTAUTH_SECRET:
+    process.env.NEXTAUTH_SECRET ??
+    (process.env.NODE_ENV === "production"
+      ? undefined
+      : "development-nextauth-secret"),
+  NEXTAUTH_URL:
+    process.env.NEXTAUTH_URL ??
+    (process.env.NODE_ENV === "production"
+      ? undefined
+      : "http://localhost:3000"),
+  GOOGLE_CLIENT_ID:
+    process.env.GOOGLE_CLIENT_ID ??
+    (process.env.NODE_ENV === "production"
+      ? undefined
+      : "development-google-client-id"),
+  GOOGLE_CLIENT_SECRET:
+    process.env.GOOGLE_CLIENT_SECRET ??
+    (process.env.NODE_ENV === "production"
+      ? undefined
+      : "development-google-client-secret"),
+  UPLOADTHING_SECRET:
+    process.env.UPLOADTHING_SECRET ??
+    (process.env.NODE_ENV === "production"
+      ? undefined
+      : "development-uploadthing-secret"),
+  UPLOADTHING_TOKEN:
+    process.env.UPLOADTHING_TOKEN ??
+    (process.env.NODE_ENV === "production"
+      ? undefined
+      : "development-uploadthing-token"),
+  SKIP_ENV_VALIDATION: process.env.SKIP_ENV_VALIDATION,
   // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
 };
 
